@@ -57,6 +57,8 @@ $ indiserver indi_beaver
 You can then connect to the driver from any client, the default port is 7624.
 If you're using KStars, the drivers will be automatically listed in KStars' Device Manager.
 
+Before you Start
+================
 - Shutter controls will not show unless the rotator unit is in communication with the
   shutter unit.
 - Under the Slaving tab: you need to set the parameters for your dome:
