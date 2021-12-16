@@ -2,20 +2,20 @@ Lunatico NexDome Beaver INDI Driver
 =========================================
 
 This package provides the INDI driver for Lunatico NexDome Beaver controller.
-As of this version, it covers focuser functionality, in one port of the controller. 
 
 Requirements
 ============
 
-+ INDI >= v0.6 (http://indi.sf.net)
-
-	You need to install both indi and indi-devel to build this package.
-	
+You need to install both indi and indi-dev to build this package. The best way
+is to install libindi-dev package from the PPA. If you cannot use
+the PPA you need to install libindi-dev from your distribution or compile the
+indi libraries yourself using instructions from the INDI website. To compile 
+the driver you will need also: cmake, libindi-dev, and git (maybe more ...)
 	
 Installation
 ============
 
-	See INSTALL
+	See INSTALL.md
 	
 How to Use
 ==========
