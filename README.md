@@ -71,5 +71,5 @@ If you're using KStars, the drivers will be automatically listed in KStars' Devi
 - Under the Main tab, click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
 - Under the Main tab, set the home position degrees (Home ...ition).  This tells the software
-  where the home sensor magnet is from the North.
+  home many degrees the home sensor magnet is from the North.
 
