@@ -74,4 +74,6 @@ Before you Start
   find and measure the home sensor on the rotator and set all the parameters.
 - Under the Main tab, set the home position degrees (Home ...ition).  This tells the software
   home many degrees the home sensor magnet is from the North.
+- To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
+- To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Main tab
 
