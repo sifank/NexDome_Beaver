@@ -40,6 +40,7 @@ To fix:
 3) $ sudo rm /usr/lib/libindidriver.so    # remove empty link
 4) $ sudo ln -s /usr/lib/x86_(replace from locate above)/libindidriver.so  libindidriver.so
    1) (example on my Raspberry Pi):  sudo ln -s /usr/lib/x86_64-linux-gnu/libindidriver.so  libindidriver.so)
+5) You can then rerun from the make step onwards
 
 That's it - you'll have the Beaver driver listed in the Dome section
 ... and you can remove the "build" folder.
