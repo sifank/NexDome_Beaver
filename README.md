@@ -71,11 +71,11 @@ Before you Start
   - E displacement (m):  ?? (0 if pier/mount directly in center of dome)
   - Up displacement (m): ?? (height of the ra/dec intersection of your mount above the dome ring)
   - OTA offset (m):  ?? (distance between center of telescope and ra/dec intersection of mount)
-- Under the Main tab, click on the 'Measure Home' button to initialize the rotator.  This will
+- Under the Rotator tab, click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
-- Under the Main tab, set the home position degrees (Home ...ition).  This tells the software
-  home many degrees the home sensor magnet is from the North.
+- Under the Rotator tab, set the home position degrees (Home ...ition).  This tells the software
+  how many degrees the home sensor magnet is from the North.
 - *NOTE* In general the Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout/voltage settings, you should not change these unless you really know what you are doing!
   - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
-  - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Main tab
+  - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
 
