@@ -11,6 +11,6 @@ You must have git, CMake >= 2.4.7 and indilib in order to build this package.
 6) $ make
 7) $ sudo make install
 
-That's it - you'll have the Beaver drivers listed in the Dome section
+That's it - you'll have the Beaver driver listed in the Dome section
 ... and you can remove the "build" folder.
 
