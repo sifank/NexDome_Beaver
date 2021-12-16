@@ -6,6 +6,9 @@ This package provides the INDI driver for Lunatico NexDome Beaver controller.
 Requirements
 ============
 
+As of this beta release, this has only been compiled on a Raspberry Pi 
+running Ubuntu Bionic (V18.04) and on a laptop running the same OS.
+
 You need to install both indi and indi-dev to build this package. The best way
 is to install libindi-dev package from the PPA. If you cannot use
 the PPA you need to install libindi-dev from your distribution or compile the
@@ -14,8 +17,6 @@ the driver you will need also: cmake, libindi-dev, and git (maybe more ...)
 	
 Installation
 ============
-
-You must have git, CMake >= 2.4.7 and indilib in order to build this package.
 
 In a working directory of your choosing:
 1) $ git clone https://github.com/sifank/Beaver.git
