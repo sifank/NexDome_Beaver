@@ -21,8 +21,7 @@ To fix:
 1) $ locate libindidriver.so
     1) If you don't have locate, it can be installed with: $ sudo apt install locate
     2) Then update it's db: $ sudo updatedb
-2) $ cd /usr/lib; ls -ld libindidriver*   # make sure what this link points to does not 
-                                          # exist (eg libindidriver.so.1), eg, only one libindidriver
+2) $ cd /usr/lib; ls -ld libindidriver*   # make sure what this link points to does not exist (eg libindidriver.so.1), eg, only one libindidriver
 3) $ sudo rm /usr/lib/libindidriver.so    # remove empty link
 4) $ sudo ln -s /usr/lib/x86_(replace from locate above)/libindidriver.so libindidriver.so
    (example on my Raspberry Pi):  sudo ln -s /usr/lib/x86_64-linux-gnu/libindidriver.so libindidriver.so)
