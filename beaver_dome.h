@@ -110,10 +110,13 @@ class Beaver : public INDI::Dome
         //bool rotatorGetStatus();  // ALERT should return actual status, int
         bool abortAll();
 
+        bool rotatorGetSettings();
+        bool rotatorSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout);
+
         ///////////////////////////////////////////////////////////////////////////////
         /// Shutter Motion Control
         ///////////////////////////////////////////////////////////////////////////////
-        bool shutterSetSettings(uint32_t maxSpeed, uint32_t minSpeed, uint32_t acceleration, uint32_t timeout, uint32_t voltage);
+        bool shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout, double voltage);
         bool shutterGetSettings();
         bool shutterFindHome();
         bool shutterAbort();
@@ -171,7 +174,15 @@ class Beaver : public INDI::Dome
             SHUTTER_TIMEOUT,
             SHUTTER_SAFE_VOLTAGE
         };
-
+        // Rotator Configuration
+        INDI::PropertyNumber RotatorSettingsNP {4};
+        enum
+        {
+            ROTATOR_MAX_SPEED,
+            ROTATOR_MIN_SPEED,
+            ROTATOR_ACCELERATION,
+            ROTATOR_TIMEOUT
+        };
 
         ///////////////////////////////////////////////////////////////////////
         /// Private Variables

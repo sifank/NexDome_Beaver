@@ -40,6 +40,7 @@ static std::unique_ptr<Beaver> dome(new Beaver());
 Beaver::Beaver()
 {
     setVersion(LUNATICO_VERSION_MAJOR, LUNATICO_VERSION_MINOR);
+    // TBD consider implementing CAN_PARK instead of having sepearte tab ... or, consolodate on Site Mgmt tab ...
     SetDomeCapability(DOME_CAN_ABORT |
                       DOME_CAN_ABS_MOVE |
                       DOME_CAN_REL_MOVE |
@@ -54,14 +55,30 @@ bool Beaver::initProperties()
 
     SetParkDataType(PARK_AZ);
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// Main Tab
+    ///////////////////////////////////////////////////////////////////////////////
+    // Rotator status
+    RotatorStatusTP[0].fill("STATUS", "Status", "Idle");
+    RotatorStatusTP.fill(getDeviceName(), "ROTATORSTATUS", "Dome", MAIN_CONTROL_TAB, IP_RO, 60, IPS_IDLE);
+
+    // Shutter Voltage
+    ShutterVoltsNP[0].fill("SHUTTERvolts", "Volts", "%.1f", 0.0, 15, 0.0, 0);
+    ShutterVoltsNP.fill(getDeviceName(), "SHUTTERVOLTS", "Shutter", MAIN_CONTROL_TAB, IP_RO, 60, IPS_OK);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    // #1 Calibration
+    // Rototor settings tab
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Home position (offset from North)
+    HomePositionNP[0].fill("POSITON", "Degrees", "%.2f", 0.0, 360.0, 0.0, 0);
+    // TODO add set to current
+    HomePositionNP.fill(getDeviceName(), "HOME_POSITION", "Home Sensor Position", ROTATOR_TAB, IP_RW, 60, IPS_IDLE);
+
     // Rotator
     RotatorCalibrationSP[ROTATOR_HOME_FIND].fill("ROTATOR_HOME_FIND", "Find Home", ISS_OFF);
     RotatorCalibrationSP[ROTATOR_HOME_MEASURE].fill("ROTATOR_HOME_MEASURE", "Measure Home", ISS_OFF);
     RotatorCalibrationSP[ROTATOR_HOME_GOTO].fill("ROTATOR_HOME_GOTO", "Goto Home", ISS_OFF);
-    RotatorCalibrationSP.fill(getDefaultName(), "ROTATOR_CALIBRATION", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60,
+    RotatorCalibrationSP.fill(getDefaultName(), "ROTATOR_CALIBRATION", "Rotator", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
                               IPS_IDLE);
     
     /******* NOTE DOME_CAN_PARK removes the need for this (?)
@@ -71,8 +88,18 @@ bool Beaver::initProperties()
     RotatorParkSP.fill(getDefaultName(), "ROTATOR_PARK", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60,
                               IPS_IDLE);
     ******/
-    
-    // Shutter
+
+    // Rotator Settings
+    RotatorSettingsNP[ROTATOR_MAX_SPEED].fill("SHUTTER_MAX_SPEED", "Max Speed (m/s)", "%.f", 1, 1000, 10, 800);
+    RotatorSettingsNP[ROTATOR_MIN_SPEED].fill("SHUTTER_MIN_SPEED", "Min Speed (m/s)", "%.f", 1, 1000, 10, 400);
+    RotatorSettingsNP[ROTATOR_ACCELERATION].fill("SHUTTER_ACCELERATION", "Acceleration (m/s^2)", "%.f", 1, 1000, 10, 500);
+    RotatorSettingsNP[ROTATOR_TIMEOUT].fill("SHUTTER_TIMEOUT", "Timeout (s)", "%.f", 1, 1000, 10, 83);
+    RotatorSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", ROTATOR_TAB, IP_RW, 60, IPS_IDLE);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Shutter settings tab
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Shutter Home (calibrate, reset)
     ShutterCalibrationSP[SHUTTER_HOME_FIND].fill("SHUTTER_HOME_FIND", "Find home", ISS_OFF);
     ShutterCalibrationSP.fill(getDeviceName(), "SHUTTER_CALIBRATION", "Shutter", SHUTTER_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
@@ -85,32 +112,15 @@ bool Beaver::initProperties()
     ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RW, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    // #3 Communication & Firmware
+    // Info tab (firmware/driver)
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Firmware Version
     FirmwareVersionTP[0].fill("VERSION", "Version", "");
-    FirmwareVersionTP.fill(getDeviceName(), "DOME_FIRMWARE", "Firmware", MAIN_CONTROL_TAB, IP_RO, 0, IPS_IDLE);
-    
-    ///////////////////////////////////////////////////////////////////////////////
-    /// Home Position
-    ///////////////////////////////////////////////////////////////////////////////
-    HomePositionNP[0].fill("POSITON", "Degrees", "%.2f", 0.0, 360.0, 0.0, 0);
-    HomePositionNP.fill(getDeviceName(), "HOME_POSITION", "Home Sensor Position", MAIN_CONTROL_TAB, IP_RW, 60, IPS_IDLE);
-    
-    ///////////////////////////////////////////////////////////////////////////////
-    /// Rotator Status
-    ///////////////////////////////////////////////////////////////////////////////
-    RotatorStatusTP[0].fill("STATUS", "Status", "Idle");
-    RotatorStatusTP.fill(getDeviceName(), "ROTATORSTATUS", "Dome", MAIN_CONTROL_TAB, IP_RO, 60, IPS_IDLE);
-    
-    ///////////////////////////////////////////////////////////////////////////////
-    /// Shutter Voltage
-    ///////////////////////////////////////////////////////////////////////////////
-    ShutterVoltsNP[0].fill("SHUTTERvolts", "Volts", "%.1f", 0.0, 15, 0.0, 0);
-    ShutterVoltsNP.fill(getDeviceName(), "SHUTTERVOLTS", "Shutter", MAIN_CONTROL_TAB, IP_RO, 60, IPS_OK);
-    
+    FirmwareVersionTP.fill(getDeviceName(), "DOME_FIRMWARE", "Firmware", INFO_TAB, IP_RO, 0, IPS_IDLE);
+    //add driver version
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    // #5 Misc.
+    // Communication
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE need to figure out how to get network connection working
     //    tcpConnection->setDefaultHost("192.168.1.1");
@@ -131,10 +141,11 @@ bool Beaver::updateProperties()
         InitPark();
 
         defineProperty(&FirmwareVersionTP);
-        defineProperty(&RotatorCalibrationSP);
+
         //defineProperty(&RotatorParkSP);
-        
         defineProperty(&HomePositionNP);
+        defineProperty(&RotatorCalibrationSP);
+        defineProperty(&RotatorSettingsNP);
         defineProperty(&RotatorStatusTP);
         if (shutterPresent) {
             defineProperty(ShutterCalibrationSP);
@@ -150,6 +161,7 @@ bool Beaver::updateProperties()
         deleteProperty(ShutterCalibrationSP.getName());
         deleteProperty(ShutterSettingsNP.getName());
         deleteProperty(HomePositionNP.getName());
+        deleteProperty(RotatorSettingsNP.getName());
         deleteProperty(RotatorStatusTP.getName());
         deleteProperty(ShutterVoltsNP.getName());
     }
@@ -224,38 +236,11 @@ bool Beaver::echo()
     }
     
     // get current shutter settings
-    if (shutterPresent) {
-        if (!sendCommand("!dome sendtoshutter shutter getmaxspeed#", res))
-            return false;
-        else {
-            ShutterSettingsNP[SHUTTER_MAX_SPEED].setValue(res);
-            LOGF_INFO("Shutter reports max speed of: %.1f", res);
-        }
-        if (!sendCommand("!dome sendtoshutter shutter getminspeed#", res))
-            return false;
-        else {
-            ShutterSettingsNP[SHUTTER_MIN_SPEED].setValue(res);
-            LOGF_INFO("Shutter reports min speed of: %.1f", res);
-        }
-        if (!sendCommand("!dome sendtoshutter shutter getacceleration#", res))
-            return false;
-        else {
-            ShutterSettingsNP[SHUTTER_ACCELERATION].setValue(res);
-            LOGF_INFO("Shutter reports acceleration of: %.1f", res);
-        }
-        if (!sendCommand("!dome sendtoshutter shutter gettimeoutopenclosespecs#", res))
-            return false;
-        else {
-            ShutterSettingsNP[SHUTTER_TIMEOUT].setValue(res);
-            LOGF_INFO("Shutter reports timeout(s) of: %.1f", res);
-        }
-        if (!sendCommand("!dome sendtoshutter shutter getsafevoltage#", res))
-            return false;
-        else {
-            ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].setValue(res);
-            LOGF_INFO("Shutter reports safe voltage of: %.1f", res);
-        }
-    }
+    if (!shutterGetSettings())
+        return false;
+    // get current rotator settings
+    if (!rotatorGetSettings())
+        return false;
     
     return true;
 }
@@ -294,6 +279,8 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
             return true;
         }
         
+        // TODO add set park to current and set home to current
+
         /*******  NOTE I think setting the DOME_CAN_PARK removes the need for this
         /////////////////////////////////////////////
         // Rotator Park
@@ -325,7 +312,7 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
         // Shutter Calibration
         /////////////////////////////////////////////
         if (ShutterCalibrationSP.isNameMatch(name))
-        {
+        {  //TEST
             ShutterCalibrationSP.update(states, names, n);
             bool rc = shutterFindHome();
             if (rc)
@@ -346,6 +333,19 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
 {
     if (dev != nullptr && strcmp(dev, getDeviceName()) == 0)
     {
+        /////////////////////////////////////////////
+        // Rotator Settings
+        /////////////////////////////////////////////
+        if (RotatorSettingsNP.isNameMatch(name))
+        {
+            RotatorSettingsNP.update(values, names, n);
+            RotatorSettingsNP.setState(rotatorSetSettings(RotatorSettingsNP[SHUTTER_MAX_SPEED].getValue(),
+                                       RotatorSettingsNP[SHUTTER_MIN_SPEED].getValue(),
+                                       RotatorSettingsNP[SHUTTER_ACCELERATION].getValue(),
+                                       RotatorSettingsNP[SHUTTER_TIMEOUT].getValue()) ? IPS_OK : IPS_ALERT);
+            RotatorSettingsNP.apply();
+            return true;
+        }
         /////////////////////////////////////////////
         // Shutter Settings
         /////////////////////////////////////////////
@@ -817,16 +817,23 @@ bool Beaver::shutterAbort()
 /////////////////////////////////////////////////////////////////////////////
 ///
 /////////////////////////////////////////////////////////////////////////////
-bool Beaver::shutterSetSettings(uint32_t maxSpeed, uint32_t minSpeed, uint32_t acceleration, uint32_t timeout,
-                                uint32_t voltage)
+bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout,
+                                double voltage)
 {
-    // TODO
-    INDI_UNUSED(maxSpeed);
-    INDI_UNUSED(minSpeed);
-    INDI_UNUSED(acceleration);
-    INDI_UNUSED(timeout);
-    INDI_UNUSED(voltage);
-    return false;
+    // TEST
+    if (shutterPresent) {
+        if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed))
+            return false;
+        if (!sendCommand("!dome setshutterminspeed#", minSpeed))
+            return false;
+        if (!sendCommand("!dome setshutteracceleration#", acceleration))
+            return false;
+        if (!sendCommand("!dome setshuttertimeoutopenclose#", timeout))
+            return false;
+        if (!sendCommand("!dome setshuttersafevoltage#", voltage))
+            return false;
+    }
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -834,8 +841,98 @@ bool Beaver::shutterSetSettings(uint32_t maxSpeed, uint32_t minSpeed, uint32_t a
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::shutterGetSettings()
 {
-    // TODO
-    return false;
+    // TEST
+    if (shutterPresent) {
+        if (!sendCommand("!dome getshuttermaxspeed#", res))
+            return false;
+        else {
+            ShutterSettingsNP[SHUTTER_MAX_SPEED].setValue(res);
+            LOGF_INFO("Shutter reports max speed of: %.1f", res);
+        }
+        if (!sendCommand("!dome getshutterminspeed#", res))
+            return false;
+        else {
+            ShutterSettingsNP[SHUTTER_MIN_SPEED].setValue(res);
+            LOGF_INFO("Shutter reports min speed of: %.1f", res);
+        }
+        if (!sendCommand("!dome getshutteracceleration#", res))
+            return false;
+        else {
+            ShutterSettingsNP[SHUTTER_ACCELERATION].setValue(res);
+            LOGF_INFO("Shutter reports acceleration of: %.1f", res);
+        }
+        if (!sendCommand("!dome getshuttertimeoutopenclose#", res))
+            return false;
+        else {
+            ShutterSettingsNP[SHUTTER_TIMEOUT].setValue(res);
+            LOGF_INFO("Shutter reports timeout(s) of: %.1f", res);
+        }
+        if (!sendCommand("!dome getshuttersafevoltage#", res))
+            return false;
+        else {
+            ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].setValue(res);
+            LOGF_INFO("Shutter reports safe voltage of: %.1f", res);
+        }
+        ShutterSettingsNP.apply();
+    }
+
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+///
+/////////////////////////////////////////////////////////////////////////////
+bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout)
+{
+    // TEST
+    if (shutterPresent) {
+        if (!sendCommand("!domerot setmaxspeed#", maxSpeed))
+            return false;
+        if (!sendCommand("!domerot setminspeed#", minSpeed))
+            return false;
+        if (!sendCommand("!domerot setacceleration#", acceleration))
+            return false;
+        if (!sendCommand("!domerot setfullrotsecs#", timeout))
+            return false;
+    }
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+///
+/////////////////////////////////////////////////////////////////////////////
+bool Beaver::rotatorGetSettings()
+{
+    // TEST
+    if (shutterPresent) {
+        if (!sendCommand("!domerot getmaxspeed#", res))
+            return false;
+        else {
+            RotatorSettingsNP[ROTATOR_MAX_SPEED].setValue(res);
+            LOGF_INFO("Rotator reports max speed of: %.1f", res);
+        }
+        if (!sendCommand("!domerot getminspeed#", res))
+            return false;
+        else {
+            RotatorSettingsNP[ROTATOR_MIN_SPEED].setValue(res);
+            LOGF_INFO("Rotator reports min speed of: %.1f", res);
+        }
+        if (!sendCommand("!domerot getacceleration#", res))
+            return false;
+        else {
+            RotatorSettingsNP[ROTATOR_ACCELERATION].setValue(res);
+            LOGF_INFO("Rotator reports acceleration of: %.1f", res);
+        }
+        if (!sendCommand("!domerot getmaxfullfotsecs#", res))
+            return false;
+        else {
+            RotatorSettingsNP[ROTATOR_TIMEOUT].setValue(res);
+            LOGF_INFO("Rotator reports timeout(s) of: %.1f", res);
+        }
+        RotatorSettingsNP.apply();
+    }
+
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
