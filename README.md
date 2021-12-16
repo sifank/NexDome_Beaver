@@ -33,7 +33,7 @@ If you're using KStars, the drivers will be automatically listed in KStars' Devi
 - Shutter controls will not show unless the rotator unit is in communication with the
   shutter unit.
 - Under the Slaving tab: you need to set the parameters for your dome:
-+ [Reference] (https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
+  + [Reference] (https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
   - Autosync (m): .5 (already set)
   - Radius (m):  2.2 (Nexdome)
   - Shutter width (m):  0.6 (Nexdome)
