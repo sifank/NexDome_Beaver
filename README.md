@@ -77,6 +77,7 @@ Before you Start
 - Under the Rotator tab, set the home position degrees (Home ...ition).  This tells the software
   how many degrees the home sensor magnet is from the North.
 - *NOTE* In general the Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout/voltage settings, you should not change these unless you really know what you are doing!
+  - If either the rotator or shutter unit is turned off, you may need to redo these home procedures
   - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
 
