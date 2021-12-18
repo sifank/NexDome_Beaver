@@ -27,8 +27,8 @@ In a working directory of your choosing:
 6) $ make
 7) $ sudo make install
 
-Potential Issue
-===============
+Potential Build Issue
+=====================
 Since this will build 'outside' of the indi-3rdparty structure, you might get
 the error: *** No rule to make target '/usr/lib/libindidriver.so'
 As long as you have indilib installed, it's on your system, just not under /usr/lib.
@@ -83,6 +83,7 @@ Before you Start
 
 ISSUES
 ======
+- Can only connect with USB (I'm not able to test the network connection yet - issue with my controller)
 - I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
 - I am not able to test the network (issue with the controller atm)
-- 
+
