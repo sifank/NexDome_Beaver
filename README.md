@@ -77,6 +77,10 @@ Before you Start
   find and measure the home sensor on the rotator and set all the parameters.
 - Under the Rotator tab, set the home position degrees (Home ...ition).  This tells the software
   how many degrees the home sensor magnet is from the North.
+  - One method to do this, depending on whether the controller knows where things are:
+    - If the controller has some other value for home (other than zero), do a find home and set it to zero
+    - Either with the controller's buttons or via the INDI driver, move the dome slit to north
+    - Read the current az position from the Main tab of the INDI driver and set the Home Position field on the Rotator tab to this value
 - *NOTE* In general the Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout/voltage settings, you should not change these unless you really know what you are doing!
   - If either the rotator or shutter unit is turned off, you may need to redo these home procedures
   - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
