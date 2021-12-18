@@ -81,3 +81,6 @@ Before you Start
   - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
 
+ISSUES
+======
+- I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
