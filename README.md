@@ -85,5 +85,4 @@ ISSUES
 ======
 - Can only connect with USB (I'm not able to test the network connection yet - issue with my controller)
 - I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
-- I am not able to test the network (issue with the controller atm)
 
