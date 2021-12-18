@@ -61,28 +61,22 @@ class Beaver : public INDI::Dome
         virtual IPState Park() override;
         virtual IPState UnPark() override;
 
-        // Beaver dome status
+        // Beaver status
         enum
         {
-            DOME_STATUS_IDLE,
-            DOME_STATUS_ROTATOR_MOVING,
-            DOME_STATUS_SHUTTER_MOVING,
-            DOME_STATUS_BOTH_MOVING,
-            DOME_STATUS_ROTATOR_ERROR = 4,
-            DOME_STATUS_SHUTTER_ERROR = 8,
-            DOME_STATUS_SHUTTER_COMM = 16,
-            DOME_STATUS_UNSAFE_CW = 32,
-            DOME_STATUS_UNSAFE_RG = 64,
-        };
-
-        // Beaver shutter status
-        enum
-        {
-            SHUTTER_STATUS_OPENED,
-            SHUTTER_STATUS_CLOSED,
-            SHUTTER_STATUS_OPENING,
-            SHUTTER_STATUS_CLOSING,
-            SHUTTER_STATUS_ERROR,
+            DOME_STATUS_ROTATOR_MOVING = 0x0001,
+            DOME_STATUS_SHUTTER_MOVING = 0x0002,
+            DOME_STATUS_ROTATOR_ERROR = 0x0004,
+            DOME_STATUS_SHUTTER_ERROR = 0x0008,
+            DOME_STATUS_SHUTTER_COMM = 0x0010,
+            DOME_STATUS_UNSAFE_CW = 0x0020,
+            DOME_STATUS_UNSAFE_RG = 0x0040,
+            DOME_STATUS_SHUTTER_OPENED = 0x0080,
+            DOME_STATUS_SHUTTER_CLOSED = 0x0100,
+            DOME_STATUS_SHUTTER_OPENING = 0x0200,
+            DOME_STATUS_SHUTTER_CLOSING = 0x0400,
+            DOME_STATUS_ROTATOR_HOME = 0x0800,
+            DOME_STATUS_ROTATOR_PARKED = 0x1000
         };
 
     private:
@@ -99,6 +93,7 @@ class Beaver : public INDI::Dome
         bool rotatorGetAz();
         bool rotatorSyncAZ(double az);
         bool rotatorSetHome(double az);
+        bool rotatorSetPark(double az);
         bool rotatorGotoPark();
         bool rotatorGotoHome();
         bool rotatorMeasureHome();
@@ -137,27 +132,29 @@ class Beaver : public INDI::Dome
         INDI::PropertyText FirmwareVersionTP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
+        // Goto Home
+        INDI::PropertySwitch GotoHomeSP {1};
+        // Park position in az
+        INDI::PropertyNumber ParkPositionNP {1};
         // Shutter voltage
         INDI::PropertyNumber ShutterVoltsNP {1};
         // Rotator Status        
         INDI::PropertyText RotatorStatusTP {1};
+        // Shutter Status
+        INDI::PropertyText ShutterStatusTP {1};
         // Rotator Calibration
-        INDI::PropertySwitch RotatorCalibrationSP {3};
+        INDI::PropertySwitch RotatorCalibrationSP {2};
         enum
         {
             ROTATOR_HOME_FIND,
-            ROTATOR_HOME_MEASURE,
-            ROTATOR_HOME_GOTO
+            ROTATOR_HOME_MEASURE
         };
-        /****** NOTE DOME_CAN_PARK removes the need for this (?)
-        INDI::PropertySwitch RotatorParkSP {3};
+        INDI::PropertySwitch RotatorParkSP {2};
         enum
         {
-            ROTATOR_HOME_PARK,
-            ROTATOR_HOME_UNPARK,
-            ROTATOR_HOME_SETPARK
+            ROTATOR_PARK,
+            ROTATOR_UNPARK
         };
-        ******/
         // Shutter Calibration
         INDI::PropertySwitch ShutterCalibrationSP {1};
         enum
