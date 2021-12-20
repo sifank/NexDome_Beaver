@@ -105,8 +105,6 @@ Shutter Open/Close will only show up if the Shutter controller is up and communi
 CAUTION: I've caught the Dome CW and CCW buttons crashing Kstars!  This part is a work in progress.
 - The work-around is to use the Relative Position field.  Fill in the relative amount to move (+ CW, - CCW) and click Set.
 
-CAUTION: 'Sync' should 'not' be used!  Instead make sure your home offset is set correctly (see Rotator Tab)
-
 Absolute Position will move the dome AZ relative to what you set the Home Offset to, which if set according to the instruction in the Rotator Tab, this will be from true north.
 
 Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Offset (Rotator Tab) will correctly index this from north.
