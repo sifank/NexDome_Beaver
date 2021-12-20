@@ -2,6 +2,8 @@ ALERTS
 ======
 The Find Home and Measure Home buttons are not showing up on the Rotator tab.  Am working on this now ...
 
+This document is a work in process...
+
 Lunatico NexDome Beaver INDI Driver
 =========================================
 This package provides the INDI driver for Lunatico NexDome Beaver controller.
