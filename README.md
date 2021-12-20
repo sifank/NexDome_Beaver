@@ -1,3 +1,7 @@
+ALERTS
+======
+The Find Home and Measure Home buttons are not showing up on the Rotator tab.  Am working on this now ...
+
 Lunatico NexDome Beaver INDI Driver
 =========================================
 This package provides the INDI driver for Lunatico NexDome Beaver controller.
@@ -49,19 +53,9 @@ Before you Start
   - This can take up to 20 secs after turning on the shutter
 - Under the Slaving tab: you need to set the parameters for your dome:
   - (Reference the Slaving Tab below)
-  
-- Under the Rotator tab, click on the 'Measure Home' button to initialize the rotator.  This will
-  find and measure the home sensor on the rotator and set all the parameters.
-- Under the Rotator tab, set the home position degrees (Home ...ition).  This tells the software
-  how many degrees the home sensor magnet is from the North.
-  - One method to do this, depending on whether the controller knows where things are:
-    - If the controller has some other value for home (other than zero), do a find home and set it to zero
-    - Either with the controller's buttons or via the INDI driver, move the dome slit to north
-    - Read the current az position from the Main tab of the INDI driver and set the Home Position field on the Rotator tab to this value
-- *NOTE* In general the Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout/voltage settings, you should not change these unless you really know what you are doing!
-  - If either the rotator or shutter unit is turned off, you may need to redo these home procedures
-  - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
-  - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
+- Initialize the rotator and shutter
+  - (Reference both the Rotator and Shutter tabs)
+
 - I placed a shutter battery voltage indicator on the bottom of the Main tab, so that we can be alert to a low battery and take action.
 
 OPERATIONS
@@ -110,10 +104,37 @@ Rotator Tab
 
 ![Rotator Tab](Assets/RotatorTab.png)
 
+- Click on the 'Measure Home' button to initialize the rotator.  This will
+  find and measure the home sensor on the rotator and set all the parameters.
+- Set the home position degrees (Home ...ition).  This tells the software
+  how many degrees the home sensor magnet is from the North.
+  - One method to do this, depending on whether the controller knows where things are:
+    - If the controller has some other value for home (other than zero), do a find home and set it to zero
+    - Then either with the rotator's button or via the INDI driver, move the dome slit to north
+    - Read the current az position from the Main tab of the INDI driver and set the Home Position field on the Rotator tab to this value
+- The Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout settings
+  - You should not change these unless you really know what you are doing!
+  - If either the rotator or shutter unit is turned off (zero values for the max/min, etc), you should redo the home procedures
+  - To reset the rotator parameters back to defaults, click the 'Measure Home' button
+- Park position can be set in two ways:
+  - Enter the degress in the Park Position field
+  - Move the dome to where you want park to be and click on 'Set To Current'
+- To Park or unPark the dome or goto Home, see the Main tab
+
 Shutter Tab
 -----------
 
 ![Shutter Tab](Assets/ShutterTab.png)
+
+- NOTE:  This tab will not show up unless the rotator controller is communicating with the shutter
+  - When turning the shutter power on, it can take up to 20 seconds for communication to be established
+- Reference the Rotator section above for additional information that applies to the shutter as well
+- The 'Find Home' button will exercise the shutter through it's full range from closed to open.  It will then set all these fields appropriately.
+  - You really should not change these unless you know what you are doing!
+  - To reset shutter parameters back to defaults, click the 'Find Home' button.
+- If these values are zero, click on the 'Find Home' button to initialize them
+- Safe Voltage is the level at which the rotator will execute it's shutter safety proceedure and close the shutter.
+- To open or close the shutter, see the Main Tab.
 
 Presets Tab
 -----------
