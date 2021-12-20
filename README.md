@@ -67,6 +67,26 @@ Before you Start
 OPERATIONS
 ==========
 
+Connection Tab
+--------------
+
+![Connection Tab](Assets/ConnectionTab.png)
+
+Main Tab
+--------
+
+![Main Tab](Assets/MainTab.png)
+
+Options Tab
+-----------
+
+![Options Tab](Assets/OptionsTab.png)
+
+  Policies
+  --------
+  
+  
+
 Slaving Tab
 -----------
 
@@ -74,7 +94,7 @@ Slaving Tab
 
 You can slave the dome to the mount by setting the required slaving parameters (by convention the units are in meters);
 
-- Radius is for the radius of the dome (typically 1.05 for a Nexdome)
+- Radius is for the radius of the dome (typically 2.2 for a Nexdome)
 - Shutter width is the aperture of the shutter of the dome in meters (0.6m in current models)
 - N displacement is for north-south displacement of the intersection of the RA & DEC axis as measured from the center of the dome. Displacement to north is positive, and to south is negative.
 - E displacement is for east-west displacement. Similar as the above, displacement to east are positive, and to west are negative.
@@ -84,6 +104,21 @@ You can slave the dome to the mount by setting the required slaving parameters (
 After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions. You can also set the Autosync threshold which is the minimum distance autosync will move the dome. Any motion below this threshold will not be triggered. This is to prevent continuous dome moving during telescope tracking.
 
 + [See Reference for more infomation on these settings](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
+  
+Rotator Tab
+-----------
+
+![Rotator Tab](Assets/RotatorTab.png)
+
+Shutter Tab
+-----------
+
+![Shutter Tab](Assets/ShutterTab.png)
+
+Presets Tab
+-----------
+
+![Presets Tab](Assets/PresetsTab.png)
   
 ISSUES
 ============
