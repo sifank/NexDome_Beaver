@@ -2,6 +2,8 @@ ALERTS
 ======
 Do monitor the Release Notes to see what's going on and determine if you need to clone this again.
 
+Anything major I'll document in this space here.
+
 This document is a work in process...
 
 Lunatico NexDome Beaver INDI Driver
