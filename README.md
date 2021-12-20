@@ -85,6 +85,7 @@ Before you Start
   - If either the rotator or shutter unit is turned off, you may need to redo these home procedures
   - To reset shutter parameters back to defaults, click the 'Shutter Home' button on the Shutter tab
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
+- I placed a shutter battery voltage indicator on the bottom of the Main tab, so that we can be alert to a low battery and take action.
 
 ISSUES
 ======
