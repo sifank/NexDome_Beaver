@@ -87,8 +87,10 @@ Before you Start
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
 - I placed a shutter battery voltage indicator on the bottom of the Main tab, so that we can be alert to a low battery and take action.
 
-ISSUES
-======
+KNOWN ISSUES
+============
 - Can only connect with USB (I'm not able to test the network connection yet - issue with my controller)
 - I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
+- The Motion fields (Dome CW and Dome CCW) occasionally have issues and crash all of Kstars.  You can accomplish the same effect as these buttons by entering the number of degrees you want to move in the Relative Position field, using either positive (CW) or negative (CCW) numbers.
+
 
