@@ -91,6 +91,10 @@ bool Beaver::initProperties()
     ParkPositionNP[0].fill("PPOSITON", "Degrees", "%.2f", 0.0, 360.0, 0.0, 0);
     ParkPositionNP.fill(getDeviceName(), "PARK_POSITION", "Park Position", ROTATOR_TAB, IP_RW, 60, IPS_IDLE);
 
+    // Set Park to current
+    ParkPosition2CurrentSP[0].fill("ROTATOR_PARK2CURRENT", "Set to Current", ISS_OFF);
+    ParkPosition2CurrentSP.fill(getDefaultName(), "ROTATOR_PARK_CALIBRATION", "Park", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
+                              IPS_IDLE);
     // Rotator
     RotatorCalibrationSP[ROTATOR_HOME_FIND].fill("ROTATOR_HOME_FIND", "Find Home", ISS_OFF);
     RotatorCalibrationSP[ROTATOR_HOME_MEASURE].fill("ROTATOR_HOME_MEASURE", "Measure Home", ISS_OFF);
@@ -150,6 +154,7 @@ bool Beaver::updateProperties()
         defineProperty(&FirmwareVersionTP);
         defineProperty(&HomePositionNP);
         defineProperty(&ParkPositionNP);
+        defineProperty(&ParkPosition2CurrentSP);
         defineProperty(&RotatorCalibrationSP);
         defineProperty(&GotoHomeSP);
         defineProperty(&RotatorParkSP);
@@ -170,6 +175,7 @@ bool Beaver::updateProperties()
         deleteProperty(ShutterSettingsNP.getName());
         deleteProperty(HomePositionNP.getName());
         deleteProperty(ParkPositionNP.getName());
+        deleteProperty(ParkPosition2CurrentSP.getName());
         deleteProperty(RotatorSettingsNP.getName());
         deleteProperty(RotatorParkSP.getName());
         deleteProperty(RotatorStatusTP.getName());
@@ -299,6 +305,18 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
         }
 
         // TODO add set park to current
+        /////////////////////////////////////////////
+        // Set Park to current position
+        /////////////////////////////////////////////
+        if (ParkPosition2CurrentSP.isNameMatch(name))
+        {
+            ParkPosition2CurrentSP.update(states, names, n);
+            bool rc = false;
+            rc = rotatorSetPark(rotatorGetAz());
+            ParkPosition2CurrentSP.setState(rc ? IPS_IDLE : IPS_ALERT);
+            ParkPosition2CurrentSP.apply();
+            return true;
+        }
 
         /////////////////////////////////////////////
         // Rotator Park
