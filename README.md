@@ -67,7 +67,9 @@ Before you Start
 OPERATIONS
 ==========
 
-##Slaving Tab
+Slaving Tab
+-----------
+
 ![Slaving Tab](Assets/SlavingTab.png)
 
 You can slave the dome to the mount by setting the required slaving parameters (by convention the units are in meters);
