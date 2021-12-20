@@ -67,26 +67,21 @@ Before you Start
 OPERATIONS
 ==========
 
+##Slaving Tab
 ![Slaving Tab](Assets/SlavingTab.png)
+
 You can slave the dome to the mount by setting the required slaving parameters (by convention the units are in meters);
 
-    Radius is for the radius of the dome (typically 1.05 for a Nexdome)
-    Shutter width is the aperture of the shutter of the dome in meters (0.6m in current models)
-    N displacement is for north-south displacement of the intersection of the RA & DEC axis as measured from the center of the dome. Displacement to north is positive, and to south is negative.
-    E displacement is for east-west displacement. Similar as the above, displacement to east are positive, and to west are negative.
-    Up displacement is for displacement of the RA/DEC intersection in the vertical axis as measured from the origin of the dome (not the walls). Up is positive, down is negative.
-    OTA offset is for the distance of the optical axis to the RA/DEC intersection. In fork mount this is generally 0, but for German like mounts is the distance from mount axis cross to the center line of the telescope. West is positive, east is negative.
+- Radius is for the radius of the dome (typically 1.05 for a Nexdome)
+- Shutter width is the aperture of the shutter of the dome in meters (0.6m in current models)
+- N displacement is for north-south displacement of the intersection of the RA & DEC axis as measured from the center of the dome. Displacement to north is positive, and to south is negative.
+- E displacement is for east-west displacement. Similar as the above, displacement to east are positive, and to west are negative.
+- Up displacement is for displacement of the RA/DEC intersection in the vertical axis as measured from the origin of the dome (not the walls). Up is positive, down is negative.
+- OTA offset is for the distance of the optical axis to the RA/DEC intersection. In fork mount this is generally 0, but for German like mounts is the distance from mount axis cross to the center line of the telescope. West is positive, east is negative.
 
 After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions. You can also set the Autosync threshold which is the minimum distance autosync will move the dome. Any motion below this threshold will not be triggered. This is to prevent continuous dome moving during telescope tracking.
 
 + [See Reference for more infomation on these settings](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
-  - Autosync (m): .5 (already set)
-  - Radius (m):  2.2 (Nexdome)
-  - Shutter width (m):  0.6 (Nexdome)
-  - N displacement (m):  ?? (0 if pier/mount directly in center of dome)
-  - E displacement (m):  ?? (0 if pier/mount directly in center of dome)
-  - Up displacement (m): ?? (height of the ra/dec intersection of your mount above the dome ring)
-  - OTA offset (m):  ?? (distance between center of telescope and ra/dec intersection of mount)
   
 ISSUES
 ============
