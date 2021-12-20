@@ -35,26 +35,21 @@ You can use the driver in any INDI-compatible client (such as KStars or Xephem) 
 Beaver from the Dome list
 
 To run the driver from the command line:
+
 $ indiserver indi_beaver # plus other needed drivers (telescope, camera, etc)
+
+or using the indiwebserver.
 
 You can then connect to the driver from any client, the default port is 7624.
 If you're using KStars, the drivers will be automatically listed in KStars' Device Manager.
 
 Before you Start
 ================
-- Shutter controls will not show unless the rotator unit is in communication with the
-  shutter unit.
+- Shutter controls will not show unless the rotator unit is in communication with the shutter unit.
   - This can take up to 20 secs after turning on the shutter
 - Under the Slaving tab: you need to set the parameters for your dome:
-- ![Slaving Tab](Assets/SlavingTab.png)
-  + [See Reference for more infomation on these settings](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
-  - Autosync (m): .5 (already set)
-  - Radius (m):  2.2 (Nexdome)
-  - Shutter width (m):  0.6 (Nexdome)
-  - N displacement (m):  ?? (0 if pier/mount directly in center of dome)
-  - E displacement (m):  ?? (0 if pier/mount directly in center of dome)
-  - Up displacement (m): ?? (height of the ra/dec intersection of your mount above the dome ring)
-  - OTA offset (m):  ?? (distance between center of telescope and ra/dec intersection of mount)
+  - (Reference the Slaving Tab below)
+  
 - Under the Rotator tab, click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
 - Under the Rotator tab, set the home position degrees (Home ...ition).  This tells the software
@@ -69,6 +64,30 @@ Before you Start
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button on the Rotator tab
 - I placed a shutter battery voltage indicator on the bottom of the Main tab, so that we can be alert to a low battery and take action.
 
+OPERATIONS
+==========
+
+![Slaving Tab](Assets/SlavingTab.png)
+You can slave the dome to the mount by setting the required slaving parameters (by convention the units are in meters);
+
+    Radius is for the radius of the dome (typically 1.05 for a Nexdome)
+    Shutter width is the aperture of the shutter of the dome in meters (0.6m in current models)
+    N displacement is for north-south displacement of the intersection of the RA & DEC axis as measured from the center of the dome. Displacement to north is positive, and to south is negative.
+    E displacement is for east-west displacement. Similar as the above, displacement to east are positive, and to west are negative.
+    Up displacement is for displacement of the RA/DEC intersection in the vertical axis as measured from the origin of the dome (not the walls). Up is positive, down is negative.
+    OTA offset is for the distance of the optical axis to the RA/DEC intersection. In fork mount this is generally 0, but for German like mounts is the distance from mount axis cross to the center line of the telescope. West is positive, east is negative.
+
+After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions. You can also set the Autosync threshold which is the minimum distance autosync will move the dome. Any motion below this threshold will not be triggered. This is to prevent continuous dome moving during telescope tracking.
+
++ [See Reference for more infomation on these settings](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
+  - Autosync (m): .5 (already set)
+  - Radius (m):  2.2 (Nexdome)
+  - Shutter width (m):  0.6 (Nexdome)
+  - N displacement (m):  ?? (0 if pier/mount directly in center of dome)
+  - E displacement (m):  ?? (0 if pier/mount directly in center of dome)
+  - Up displacement (m): ?? (height of the ra/dec intersection of your mount above the dome ring)
+  - OTA offset (m):  ?? (distance between center of telescope and ra/dec intersection of mount)
+  
 ISSUES
 ============
 - Reference the Release Notes (above)
