@@ -5,7 +5,7 @@ This package provides the INDI driver for Lunatico NexDome Beaver controller.
 
 INSTALL
 =======
-- Reference the INSTALL document
+- Reference the INSTALL document (above)
 	
 How to Use
 ==========
@@ -50,6 +50,6 @@ Before you Start
 
 ISSUES
 ============
-- Reference the Release Notes
+- Reference the Release Notes (above)
 
 
