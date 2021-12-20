@@ -1,6 +1,6 @@
 ALERTS
 ======
-The Find Home and Measure Home buttons are not showing up on the Rotator tab.  Am working on this now ...
+Do monitor the Release Notes to see what's going on.
 
 This document is a work in process...
 
