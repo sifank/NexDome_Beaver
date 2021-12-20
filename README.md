@@ -95,7 +95,7 @@ Main Tab
 
 Shutter Open/Close will only show up if the Shutter controller is up and communicating with the Rotator controller.
 
-CAUTION: I've caught the Domw CW and CCW buttons crashing Kstars!  This part is a work in progress.
+CAUTION: I've caught the Dome CW and CCW buttons crashing Kstars!  This part is a work in progress.
 - The work-around is to use the Relative Position field.  Fill in the relative amount to move (+ CW, - CCW) and click Set.
 
 CAUTION: 'Sync' should 'not' be used!  Instead make sure your home offset is set correctly (see Rotator Tab)
