@@ -1,4 +1,5 @@
-- Version 0.2, 29211219:  
-  - Added driver version to main tab, update cmake with a Beaver version
+- Version 0.2, 29211219: 
+  - Created "General Info" tab moved the Controller Firmware field here from the Main tab 
+  - Added driver version to General Info tab, updated config.h.cmake with a Beaver version
   - Mentioned Dome CW/CCW buttons on main sometimes crash Kstars
 - Version 0.1, 20211218:  Initial release in beta.
