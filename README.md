@@ -4,8 +4,8 @@ Do monitor the Release Notes to see what's going on and determine if you need to
 
 Anything major I'll document in this space here.
 
-  Do not use the Sync feature (see Main Tab)
-  At present, you will need to use the Window's Beaver configuation utility to:
+- Do not use the Sync feature (see Main Tab)
+- At present, you will need to use the Window's Beaver configuation utility to:
   - Set IP address if you want to use the network
   - Update the firmware
 
