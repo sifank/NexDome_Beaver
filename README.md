@@ -6,7 +6,7 @@ Anything major I'll document in this space here.
 
 - Do not use the Sync feature (see Main Tab below)
 - Do not use the Dome CW and CCW buttons (see Main Tab below), those are a work in process.
-- At present, you will need to use the MSWindow's based [Beaver configuation utility](https://www.nexdome.com/resources) to:
+- At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
   - Update the firmware
 
