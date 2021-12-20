@@ -3,7 +3,7 @@
     <devGroup group="Domes">
         <device label="Beaver Dome" manufacturer="Lunatico">
             <driver name="Beaver Dome">indi_beaver_dome</driver>
-            <version>@LUNATICO_VERSION_MAJOR@.@LUNATICO_VERSION_MINOR@</version>
+            <version>@BEAVER_VERSION_MAJOR@.@BEAVER_VERSION_MINOR@</version>
         </device>
     </devGroup>
 </driversList>

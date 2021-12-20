@@ -128,8 +128,10 @@ class Beaver : public INDI::Dome
         ///////////////////////////////////////////////////////////////////////////////
         /// Properties
         ///////////////////////////////////////////////////////////////////////////////
-        // Firmware Version
+        // Beaver Firmware Version
         INDI::PropertyText FirmwareVersionTP {1};
+        // INDI driver Version
+        INDI::PropertyText BeaverINDIVersionTP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
         // Goto Home
