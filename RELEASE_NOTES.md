@@ -1,7 +1,5 @@
 - Version 0.2, 29211219: 
-  - Created "General Info" tab moved the Controller Firmware field here from the Main tab 
-  - Added driver version to General Info tab, updated config.h.cmake with a Beaver version
-  - Mentioned Dome CW/CCW buttons on main sometimes crash Kstars
+  - Added driver version to Connection tab, updated config.h.cmake with a Beaver version
   - ISSUES:
     - Can only connect with USB (I'm not able to test the network connection yet - issue with my controller)
     - I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
