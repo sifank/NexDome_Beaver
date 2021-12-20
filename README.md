@@ -59,6 +59,7 @@ If you're using KStars, the drivers will be automatically listed in KStars' Devi
 
 Before you Start
 ================
+
 - Shutter controls will not show unless the rotator unit is in communication with the shutter unit.
   - This can take up to 20 secs after turning on the shutter
 - Under the Slaving tab: you need to set the parameters for your dome:
