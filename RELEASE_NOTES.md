@@ -1,5 +1,4 @@
 - Version 0.2, 29211219:  
-  - Added driver version to main tab, update cmake with a Beaver version to distinquish 
-it from the Lunatico versions of the rest of the files in this repo.
+  - Added driver version to main tab, update cmake with a Beaver version
   - Mentioned Dome CW/CCW buttons on main sometimes crash Kstars
 - Version 0.1, 20211218:  Initial release in beta.
