@@ -73,15 +73,33 @@ Main Tab
 
 ![Main Tab](Assets/MainTab.png)
 
+Shutter Open/Close will only show up if the Shutter controller is up and communicating with the Rotator controller.
+
+CAUTION: I've caught the Domw CW and CCW buttons crashing Kstars!  This part is a work in progress.
+- The work-around is to use the Relative Position field.  Fill in the relative amount to move (+ CW, - CCW) and click Set.
+
+CAUTION: 'Sync' should 'not' be used!  Instead make sure your home offset is set correctly (see Rotator Tab)
+
+Absolute Position will move the dome AZ relative to what you set the Home Offset to, which if set according to the instruction in the Rotator Tab, this will be from true north.
+
+Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Offset (Rotator Tab) will correctly index this from north.
+
+Park position can be set anywhere.  This is set via the Rotator Tab.
+- Note: clicking on Park will move to the set park position and also prevent any rotator movement/action, until UnPark is clicked.
+
+Dome and Shutter Status fields will display any errors, idle, moving, etc.
+
+The Shutter Volts field displays the current voltage of the shutter battery.  In combination with the Safe Voltage on the Shutter tab, this can trigger the rotator controller to go into safety mode and call for the shutter to close.
+- Shutter Volts and Status fields will not show if the shutter controller is off or not in communication.
+
 Options Tab
 -----------
 
 ![Options Tab](Assets/OptionsTab.png)
 
-  Policies
-  --------
-  
-  
+You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, go to the Options tabs and click Save configuration to save the driver settings.
+
+Telescope Policy: Telescope policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
 
 Slaving Tab
 -----------
@@ -123,6 +141,8 @@ Rotator Tab
   - Move the dome to where you want park to be and click on 'Set To Current'
 - To Park or unPark the dome or goto Home, see the Main tab
 
+After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions.
+
 Shutter Tab
 -----------
 
@@ -137,6 +157,10 @@ Shutter Tab
 - If these values are zero, click on the 'Find Home' button to initialize them
 - Safe Voltage is the level at which the rotator will execute it's shutter safety proceedure and close the shutter.
 - To open or close the shutter, see the Main Tab.
+
+To enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position, see the Options Tab.
+
+After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions.
 
 Presets Tab
 -----------
