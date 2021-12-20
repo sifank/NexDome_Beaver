@@ -1,6 +1,6 @@
 ALERTS
 ======
-Do monitor the Release Notes to see what's going on.
+Do monitor the Release Notes to see what's going on and determine if you need to clone this again.
 
 This document is a work in process...
 
@@ -32,7 +32,7 @@ NexDome is a fully automatic observatory dome control system. Link your dome to 
     Failsafe feature for shutter on low battery, disconnection with controller or computer
     Park-before-close option to avoid mechanical interferences
     Manual override controls for shutter and rotation control
-    (Not implemented yet) Field-upgradable firmware
+    (Not implemented yet) Field-upgradable firmware (You will need to use the Window's Beaver configuration utility atm)
 
 How to Use
 ==========
@@ -68,6 +68,24 @@ Connection Tab
 
 ![Connection Tab](Assets/ConnectionTab.png)
 
+You can connect to the Beaver controller via Serial (USB) or Network
+
+Network
+- I am having a problem connecting to the controller, so this is not tested.  Let me know if this works for you.
+- Currently you would have to use the Window's Beaver configuration tool to set the IP address.
+- Port should be 10000
+- Connection type is UDP
+
+USB
+- Look for Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d88d70e0fd44eb11ad70aa52b003b68c-if00-port0 
+  - idVendor=10c4, idProduct=ea60 (execute on linux: lsusb)
+- BaudRate 115200
+
+The INDI driver version is listed under Driver Info (that's this software)
+
+Beaver controller's firmware version is listed on the Beaver line.
+
+
 Main Tab
 --------
 
@@ -85,6 +103,8 @@ Absolute Position will move the dome AZ relative to what you set the Home Offset
 Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Offset (Rotator Tab) will correctly index this from north.
 
 Park position can be set anywhere.  This is set via the Rotator Tab.
+- Usually this is set to where the shutter charger is located, so the shutter will be charging when parked.
+  - Some considerations:  What is the dominent wind direction? (I find that placing the front of the shutter into the wind, it keeps the dryest).  Out of the way from doors, maybe bays, etc.
 - Note: clicking on Park will move to the set park position and also prevent any rotator movement/action, until UnPark is clicked.
 
 Dome and Shutter Status fields will display any errors, idle, moving, etc.
@@ -166,6 +186,10 @@ Presets Tab
 -----------
 
 ![Presets Tab](Assets/PresetsTab.png)
+
+Allows you to set 3 rotator positions for convenient locations of your dome.
+- Example, maybe you need a ladder to access the dome or shutter.  One preset could rotate the dome so that's it's more convenient.
+
   
 ISSUES
 ============
