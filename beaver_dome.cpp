@@ -80,14 +80,6 @@ bool Beaver::initProperties()
     GotoHomeSP[0].fill("ROTATOR_HOME_GOTO", "Home", ISS_OFF);
     GotoHomeSP.fill(getDefaultName(), "ROTATOR_GOTO_HOME", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
-    // Beaver Firmware Version
-    FirmwareVersionTP[0].fill("FVERSION", "Version", "");
-    FirmwareVersionTP.fill(getDeviceName(), "DOME_FIRMWARE", "Beaver", MAIN_CONTROL_TAB, IP_RO, 0, IPS_IDLE);
-
-    // INDI driver Version
-    BeaverINDIVersionTP[0].fill("BVERSION", "Version", "");
-    BeaverINDIVersionTP.fill(getDeviceName(), "DOME_INDI", "INDI Driver", MAIN_CONTROL_TAB, IP_RO, 0, IPS_IDLE);
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Rototor settings tab
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +120,13 @@ bool Beaver::initProperties()
     ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RW, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    // INFO Tab
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Beaver Firmware Version
+    FirmwareVersionTP[0].fill("FVERSION", "Version", "");
+    FirmwareVersionTP.fill(getDeviceName(), "DOME_FIRMWARE", "Beaver", CONNECTION_TAB, IP_RO, 0, IPS_IDLE);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     // Communication
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE need to figure out how to get network connection working
@@ -148,6 +147,7 @@ bool Beaver::updateProperties()
     {
         InitPark();
 
+        defineProperty(&FirmwareVersionTP);
         defineProperty(&HomePositionNP);
         defineProperty(&ParkPositionNP);
         defineProperty(&RotatorCalibrationSP);
@@ -155,8 +155,6 @@ bool Beaver::updateProperties()
         defineProperty(&RotatorParkSP);
         defineProperty(&RotatorSettingsNP);
         defineProperty(&RotatorStatusTP);
-        defineProperty(&FirmwareVersionTP);
-        defineProperty(&BeaverINDIVersionTP);
         if (shutterIsUp()) {
             defineProperty(&ShutterCalibrationSP);
             defineProperty(&ShutterSettingsNP);
@@ -178,7 +176,6 @@ bool Beaver::updateProperties()
         deleteProperty(ShutterStatusTP.getName());
         deleteProperty(ShutterVoltsNP.getName());
         deleteProperty(FirmwareVersionTP.getName());
-        deleteProperty(BeaverINDIVersionTP.getName());
     }
 
     return true;
@@ -226,9 +223,6 @@ bool Beaver::echo()
         FirmwareVersionTP[0].setText(firmwareText);
         LOGF_INFO("Detected firmware version %s", firmwareText);
     }
-    char beaverText[MAXINDILABEL] = {0};
-    snprintf(beaverText, MAXINDILABEL, "%i.%i", BEAVER_VERSION_MAJOR, BEAVER_VERSION_MINOR);
-    BeaverINDIVersionTP[0].setText(beaverText);
     // retrieve the current az from the dome
     if (!sendCommand("!dome getaz#", res))
         return false;
