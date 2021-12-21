@@ -10,6 +10,18 @@ the PPA you need to install libindi-dev from your distribution or compile the
 indi libraries yourself using instructions from the INDI website. To compile 
 the driver you will need also: cmake, libindi-dev, and git (maybe more, do let me
 what other dependencies you find - I'll update the list)
+
+The driver is only compatible with firmware version 3.1.0 or higher. Please update the firmware for the Azimuth & Shutter controllers before using this driver.
+
+INDI NexDome driver is released as a 3rd party driver in source and binary packages. It is compatible with libindi >= v1.8.2
+
+Under Ubuntu, you can install the driver via:
+
+sudo add-apt-repository ppa:mutlaqja/ppa
+
+To be entered ...
+
+
 	
 Installation
 ============
