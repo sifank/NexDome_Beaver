@@ -6,6 +6,8 @@ Anything major I'll document in this space here.
 
 - Do not use the Sync feature (see Main Tab below)
 - Do not use the Dome CW and CCW buttons (see Main Tab below), those are a work in process.
+- The rotator and shutter set parameters are not saving the params to the controller
+- There is an issue with the rotator controller where after a power cycle, it will sometimes 'humm' instead of moving.  It's actually moving, but very very slowly.  This happens because the controller had reset it's max/min/accel params to zero.  I'm trying to creat a work-around for this atm.
 - At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
   - Update the firmware
