@@ -895,20 +895,22 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
     if (shutterIsUp()) {
         if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed)) {
             LOG_ERROR("DIAG: shutter max speed issue");
-        }
             return false;
+        }
         if (!sendCommand("!dome setshutterminspeed#", minSpeed)) {
             LOG_ERROR("DIAG: shutter min speed issue");
-        }
             return false;
+        }
         if (!sendCommand("!dome setshutteracceleration#", acceleration)) {
             LOG_ERROR("DIAG: shutter acceleration issue");
-        }
             return false;
+        }
+        /***** cntlr returning error on this
         if (!sendCommand("!dome setshuttertimeoutopenclose#", timeout)) {
             LOG_ERROR("DIAG: shutter  timeout issue");
-        }
             return false;
+        }
+        *****/
         if (!sendCommand("!dome setshuttersafevoltage#", voltage)) {
             LOG_ERROR("DIAG: shutter safe voltage issue");
             return false;
@@ -918,6 +920,7 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
             LOG_ERROR("DIAG: shutter  savefs issue");
             return false;
         }
+
         LOG_INFO("DIAG: says we set the shutters ok");
     }
 
@@ -978,7 +981,7 @@ bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceler
         return false;
     if (!sendCommand("!domerot setacceleration#", acceleration))
         return false;
-    if (!sendCommand("!domerot setfullrotsecs#", timeout))
+    if (!sendCommand("!domerot setmaxfullrotsecs#", timeout))
         return false;
     double res = 0;
     if(!sendCommand("!seletek savefs#", res)) {
