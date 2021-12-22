@@ -19,6 +19,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
+/* ISSUES:
+   - rel move over home set to park and disables moves
+   - version input needs work (crashes if fully enabled)
+   - isNumber or Switch seems to be called at start
+   - set shutter params not working (?)
+   - need to 'paint' switches and 'dots' with correct status
+   - test rel move +/- moves
+*/
 
 #include "beaver_dome.h"
 
@@ -43,10 +51,12 @@ Beaver::Beaver()
     // TBD consider implementing CAN_PARK instead of having sepearte tab ... or, consolodate on Site Mgmt tab ...
     SetDomeCapability(DOME_CAN_ABORT |
                       DOME_CAN_ABS_MOVE |
-                      DOME_CAN_REL_MOVE |
+                      DOME_CAN_REL_MOVE);
                       // DOME_CAN_PARK | removing this and building our own, allows us to place the fields where we want them
                       //                 creating a more unifying tab structure
-                      DOME_CAN_SYNC);
+                      // DOME_CAN_SYNC   this won't work - use 'set home position' instead
+                                        // dome sync will be reset any time the magneet passes over the dome cntlr!
+
     setDomeConnection(CONNECTION_TCP | CONNECTION_SERIAL);
 }
 
@@ -74,11 +84,11 @@ bool Beaver::initProperties()
     // Rotator Park
     RotatorParkSP[ROTATOR_PARK].fill("ROTATOR_PARK", "Park", ISS_OFF);
     RotatorParkSP[ROTATOR_UNPARK].fill("ROTATOR_UNPARK", "UnPark", ISS_OFF);
-    RotatorParkSP.fill(getDefaultName(), "ROTATOR_PARK", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
+    RotatorParkSP.fill(getDefaultName(), "ROTATOR_Park", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
     // Rotator Home
     GotoHomeSP[0].fill("ROTATOR_HOME_GOTO", "Home", ISS_OFF);
-    GotoHomeSP.fill(getDefaultName(), "ROTATOR_GOTO_HOME", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
+    GotoHomeSP.fill(getDefaultName(), "ROTATOR_GOTO_Home", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Rototor settings tab
@@ -116,11 +126,11 @@ bool Beaver::initProperties()
     ShutterCalibrationSP.fill(getDeviceName(), "SHUTTER_CALIBRATION", "Shutter", SHUTTER_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
     // Shutter Settings
-    ShutterSettingsNP[SHUTTER_MAX_SPEED].fill("SHUTTER_MAX_SPEED", "Max Speed (m/s)", "%.f", 1, 10, 1, 0);
-    ShutterSettingsNP[SHUTTER_MIN_SPEED].fill("SHUTTER_MIN_SPEED", "Min Speed (m/s)", "%.f", 1, 10, 1, 0);
-    ShutterSettingsNP[SHUTTER_ACCELERATION].fill("SHUTTER_ACCELERATION", "Acceleration (m/s^2)", "%.f", 1, 10, 1, 0);
-    ShutterSettingsNP[SHUTTER_TIMEOUT].fill("SHUTTER_TIMEOUT", "Timeout (s)", "%.f", 1, 10, 1, 0);
-    ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].fill("SHUTTER_SAFE_VOLTAGE", "Safe Voltage", "%.f", 1, 10, 1, 0);
+    ShutterSettingsNP[SHUTTER_MAX_SPEED].fill("SHUTTER_MAX_SPEED", "Max Speed (m/s)", "%.f", 1, 1000, 10, 800);
+    ShutterSettingsNP[SHUTTER_MIN_SPEED].fill("SHUTTER_MIN_SPEED", "Min Speed (m/s)", "%.f", 1, 1000, 10, 400);
+    ShutterSettingsNP[SHUTTER_ACCELERATION].fill("SHUTTER_ACCELERATION", "Acceleration (m/s^2)", "%.f", 1, 1000, 10, 500);
+    ShutterSettingsNP[SHUTTER_TIMEOUT].fill("SHUTTER_TIMEOUT", "Timeout (s)", "%.f", 1, 600, 1000, 145);
+    ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].fill("SHUTTER_SAFE_VOLTAGE", "Safe Voltage", "%.1f", 10, 14, .5, 11);
     ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RW, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,8 +378,10 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
         /////////////////////////////////////////////
         // Rotator Settings
         /////////////////////////////////////////////
-        if (RotatorSettingsNP.isNameMatch(name))
+        // this is being activated on start !
+        if (RotatorSettingsNP.isNameMatch(name))    // ALERT does not seem to be updating the cntlr
         {
+            LOG_INFO("DIAG: says rotator settings have been modified");
             RotatorSettingsNP.update(values, names, n);
             RotatorSettingsNP.setState(rotatorSetSettings(RotatorSettingsNP[SHUTTER_MAX_SPEED].getValue(),
                                        RotatorSettingsNP[SHUTTER_MIN_SPEED].getValue(),
@@ -378,12 +390,14 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
             RotatorSettingsNP.apply();
             return true;
         }
+        // this is being activated on start !
         /////////////////////////////////////////////
         // Shutter Settings
         /////////////////////////////////////////////
-        if (ShutterSettingsNP.isNameMatch(name))
+        if (ShutterSettingsNP.isNameMatch(name))     // ALERT does not seem to be updating the cntlr
         {
             ShutterSettingsNP.update(values, names, n);
+            LOG_INFO("DIAG: says shutter settings have been modified");
             ShutterSettingsNP.setState(shutterSetSettings(ShutterSettingsNP[SHUTTER_MAX_SPEED].getValue(),
                                        ShutterSettingsNP[SHUTTER_MIN_SPEED].getValue(),
                                        ShutterSettingsNP[SHUTTER_ACCELERATION].getValue(),
@@ -397,6 +411,7 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
         ///////////////////////////////////////////////////////////////////////////////
         if (HomePositionNP.isNameMatch(name))
         {
+            LOG_INFO("DIAG: says home pos settings have been modified");
             HomePositionNP.update(values, names, n);
             if (rotatorSetHome(HomePositionNP[0].getValue())) {
                 LOGF_INFO("Home position is updated to %.1f degrees.", HomePositionNP[0].getValue());
@@ -412,6 +427,7 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
         ///////////////////////////////////////////////////////////////////////////////
         if (ParkPositionNP.isNameMatch(name))
         {
+            LOG_INFO("DIAG: says park pos settings have been modified");
             ParkPositionNP.update(values, names, n);
             if (rotatorSetPark(ParkPositionNP[0].getValue())) {
                 LOGF_INFO("Home position is updated to %.1f degrees.", ParkPositionNP[0].getValue());
@@ -575,23 +591,39 @@ IPState Beaver::MoveAbs(double az)
 //////////////////////////////////////////////////////////////////////////////
 IPState Beaver::MoveRel(double azDiff)
 {
+
+    azDiff = domeDir * azDiff;
     m_TargetRotatorAz = DomeAbsPosN[0].value + azDiff;
 
     if (m_TargetRotatorAz < DomeAbsPosN[0].min)
         m_TargetRotatorAz += DomeAbsPosN[0].max;
     if (m_TargetRotatorAz > DomeAbsPosN[0].max)
         m_TargetRotatorAz -= DomeAbsPosN[0].max;
-
+    LOGF_INFO("DIAG: requested rel move of %.1f", azDiff);
+    lastAzDiff = fabs(azDiff);
     return MoveAbs(m_TargetRotatorAz);
 }
 
 //////////////////////////////////////////////////////////////////////////////
-/// sync rotator az (don't do this)
+/// Rotator move (calc's offset and calles abs move)
 //////////////////////////////////////////////////////////////////////////////
-bool Beaver::Sync(double az)
-{
-    return rotatorSyncAZ(az);
-}
+IPState Beaver::Move(DomeDirection dir, DomeMotionCommand operation)
+ {
+     // Map to button outputs
+    LOG_INFO("DIAG: move was called");
+     if (operation == MOTION_START)
+     {
+         if (dir == DOME_CW) {
+             domeDir = 1;
+         }
+         else {
+             domeDir = -1;
+         }
+         MoveRel(lastAzDiff);
+
+     }
+     return IPS_OK;
+ }
 
 //////////////////////////////////////////////////////////////////////////////
 /// open or close the shutter (will not show if shutter is not present)
@@ -679,6 +711,8 @@ bool Beaver::rotatorGetAz()
     return false;
 }
 
+
+// removed this
 /////////////////////////////////////////////////////////////////////////////
 ///  Sync (should not use this!) redefines current az to entered value
 /////////////////////////////////////////////////////////////////////////////
@@ -816,35 +850,6 @@ bool Beaver::rotatorIsParked()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-/// Rotator status
-/////////////////////////////////////////////////////////////////////////////
-//bool Beaver::rotatorGetStatus()
-//{
-    //double res = 0;
-    //if (sendCommand("!dome status#", res))
-    //{
-        //LOGF_INFO("Rotator status: %f", res);
-        //return res;
-    //}
-    //return false;
-//}
-
-/////////////////////////////////////////////////////////////////////////////
-///
-/////////////////////////////////////////////////////////////////////////////
-//bool Beaver::shutterGetStatus()
-//{
-    // 0 open, 1 closed, 2 opening, 3 closing, 4 error
-    //double res = 0;
-    //if (sendCommand("!dome shutterstatus#", res))
-    //{
-        //LOGF_INFO("Shutter status: %f", res);
-        //return res;
-    //}
-    //return false;
-//}
-
-/////////////////////////////////////////////////////////////////////////////
 ///
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::shutterIsUp()
@@ -888,17 +893,34 @@ bool Beaver::shutterAbort()
 bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout, double voltage)
 {
     if (shutterIsUp()) {
-        if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed))
+        if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed)) {
+            LOG_ERROR("DIAG: shutter max speed issue");
+        }
             return false;
-        if (!sendCommand("!dome setshutterminspeed#", minSpeed))
+        if (!sendCommand("!dome setshutterminspeed#", minSpeed)) {
+            LOG_ERROR("DIAG: shutter min speed issue");
+        }
             return false;
-        if (!sendCommand("!dome setshutteracceleration#", acceleration))
+        if (!sendCommand("!dome setshutteracceleration#", acceleration)) {
+            LOG_ERROR("DIAG: shutter acceleration issue");
+        }
             return false;
-        if (!sendCommand("!dome setshuttertimeoutopenclose#", timeout))
+        if (!sendCommand("!dome setshuttertimeoutopenclose#", timeout)) {
+            LOG_ERROR("DIAG: shutter  timeout issue");
+        }
             return false;
-        if (!sendCommand("!dome setshuttersafevoltage#", voltage))
+        if (!sendCommand("!dome setshuttersafevoltage#", voltage)) {
+            LOG_ERROR("DIAG: shutter safe voltage issue");
             return false;
+        }
+        double res = 0;
+        if(!sendCommand("!seletek savefs", res)) {
+            LOG_ERROR("DIAG: shutter  savefs issue");
+            return false;
+        }
+        LOG_INFO("DIAG: says we set the shutters ok");
     }
+
     return true;
 }
 
@@ -958,7 +980,11 @@ bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceler
         return false;
     if (!sendCommand("!domerot setfullrotsecs#", timeout))
         return false;
-
+    double res = 0;
+    if(!sendCommand("!seletek savefs", res)) {
+        LOG_ERROR("DIAG: dome  savefs issue");
+        return false;
+    }
     return true;
 }
 
@@ -1044,28 +1070,50 @@ bool Beaver::sendCommand(const char * cmd, double &res)
         response[nbytes_read - 1] = 0;
         LOGF_DEBUG("RES: %s", response);
 
-        //std::regex rgx(R"(.*:(\d+))");  // NOTE original regex
+        /**********  work in progress
+        // if version command, need to use different regex
+
+        if (strcmp(cmd, "!seletek tversion#") == 0) {
+            LOG_INFO("DIAG: asking for version");
+
+            std::regex rgx(R"(.*:(\d*:.*))");  // extract #:#.#.#
+            std::smatch match;
+            std::string input(response);
+
+            if (std::regex_search(input, match, rgx)) {
+                try {
+                    //res = std::stof(match.str(2));
+                    LOGF_INFO("DIAG: tversion: %s", match.str(3));
+                    res = 7;
+                    return true;
+                }
+                catch (...) {
+                    LOGF_ERROR("Failed to process version response: %s", response);
+                    return false;
+                }
+            }
+
+        }
+        **********/
+
+        //std::regex rgx(R"(.*:(\d+))");  // NOTE: original regex
         std::regex rgx(R"(.*:((\d+(\.\d*)*)))");  // changed to accept int or float
         std::smatch match;
         std::string input(response);
 
-        if (std::regex_search(input, match, rgx))
-        {
-            try
-            {
+        if (std::regex_search(input, match, rgx)) {
+            try {
                 res = std::stof(match.str(1));
                 return true;
             }
-            catch (...)
-            {
+            catch (...) {
                 LOGF_ERROR("Failed to process response: %s.", response);
                 return false;
             }
         }
     }
 
-    if (rc != TTY_OK)
-    {
+    if (rc != TTY_OK) {
         char errstr[MAXRBUF] = {0};
         tty_error_msg(rc, errstr, MAXRBUF);
         LOGF_ERROR("Serial read error: %s.", errstr);

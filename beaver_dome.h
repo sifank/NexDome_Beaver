@@ -46,7 +46,7 @@ class Beaver : public INDI::Dome
         // Rotator
         virtual IPState MoveAbs(double az) override;
         virtual IPState MoveRel(double azDiff) override;
-        virtual bool Sync(double az) override;
+        virtual IPState Move(DomeDirection dir, DomeMotionCommand operation) override;
 
         // Shutter
         virtual IPState ControlShutter(ShutterOperation operation) override;
@@ -102,7 +102,6 @@ class Beaver : public INDI::Dome
         bool rotatorIsParked();
         bool rotatorUnPark();
         bool rotatorSetPark();
-        //bool rotatorGetStatus();  // ALERT should return actual status, int
         bool abortAll();
 
         bool rotatorGetSettings();
@@ -115,7 +114,6 @@ class Beaver : public INDI::Dome
         bool shutterGetSettings();
         bool shutterFindHome();
         bool shutterAbort();
-        //bool shutterGetStatus(); // ALERT should return actual status, int
         bool shutterIsUp();
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -200,4 +198,6 @@ class Beaver : public INDI::Dome
         // Maximum buffer for sending/receving.
         static constexpr const uint8_t DRIVER_LEN {128};
         bool shutterPresent;
+        int domeDir = 1;
+        double lastAzDiff = 1;
 };
