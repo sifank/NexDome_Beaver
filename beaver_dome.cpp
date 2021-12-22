@@ -914,7 +914,7 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
             return false;
         }
         double res = 0;
-        if(!sendCommand("!seletek savefs", res)) {
+        if(!sendCommand("!seletek savefs#", res)) {
             LOG_ERROR("DIAG: shutter  savefs issue");
             return false;
         }
@@ -981,7 +981,7 @@ bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceler
     if (!sendCommand("!domerot setfullrotsecs#", timeout))
         return false;
     double res = 0;
-    if(!sendCommand("!seletek savefs", res)) {
+    if(!sendCommand("!seletek savefs#", res)) {
         LOG_ERROR("DIAG: dome  savefs issue");
         return false;
     }
