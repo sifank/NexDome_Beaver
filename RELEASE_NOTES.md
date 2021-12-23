@@ -4,8 +4,8 @@
   - Added flag to prevent updating the rotator and shutter settings until everything in initialized
   - Cleaned up INFO statements, added DEBUG statements in most places
   - KNOWN ISSUES:
-    - Shutter max/min/accel/safevoltage is not updating, don't use
-    - Cntlr version is not reporting correctly
+    - Setting the Dome and Shutter max/min/accel/safevoltage is disabled for now (reports correct values tho)
+    - Cntlr (Beaver) version is not working, reports N/A for now
     - Have not tested network connection, use USB
     - Dome CW and CCW are working now, but I need to test those more
     
