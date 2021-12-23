@@ -108,7 +108,7 @@ bool Beaver::initProperties()
     ParkPosition2CurrentSP.fill(getDefaultName(), "ROTATOR_PARK_CALIBRATION", "Park", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
                               IPS_IDLE);
     // Rotator
-    RotatorCalibrationSP[ROTATOR_HOME_FIND].fill("ROTATOR_HOME_FIND", "Auto Calibrate", ISS_OFF);
+    RotatorCalibrationSP[ROTATOR_HOME_FIND].fill("ROTATOR_HOME_FIND", "AutoCalibrate", ISS_OFF);
     RotatorCalibrationSP[ROTATOR_HOME_MEASURE].fill("ROTATOR_HOME_MEASURE", "Measure Home", ISS_OFF);
     RotatorCalibrationSP.fill(getDefaultName(), "ROTATOR_CALIBRATION", "Rotator", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
                               IPS_IDLE);
@@ -154,7 +154,6 @@ bool Beaver::initProperties()
     tcpConnection->setDefaultPort(10000);
     tcpConnection->setConnectionType(Connection::TCP::TYPE_UDP);
     tty_set_generic_udp_format(1);
-    // TODO how to set default baudrate
     addDebugControl();
     return true;
 }
@@ -238,9 +237,10 @@ const char *Beaver::getDefaultName()
 //////////////////////////////////////////////////////////////////////////////
 bool Beaver::echo()
 {
-    // retrieve the version from the dome
-    // TODO this does not work, need separate sendCommand to return string, or split sendCommand into 2 functions
     double res = 0;
+    // retrieve the version from the dome
+    /************ TODO this does not work, need separate sendCommand to return string, or split sendCommand into 2 functions
+
     if (!sendCommand("!seletek tversion#", res))
         return false;     //NOTE perhaps set a value for a false, then check at end to return false, thereby allowing other checks to occur
     else {
@@ -249,6 +249,9 @@ bool Beaver::echo()
         FirmwareVersionTP[0].setText(firmwareText);
         LOGF_INFO("Detected firmware version %s", firmwareText);
     }
+    ***************/
+    FirmwareVersionTP[0].setText("N/A");   // TODO for now ...
+
     // retrieve the current az from the dome
     if (!sendCommand("!dome getaz#", res))
         return false;
@@ -403,10 +406,11 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
 {
     if (dev != nullptr && strcmp(dev, getDeviceName()) == 0)
     {
+        /*********************************** not working, leaving out for now
         /////////////////////////////////////////////
         // Rotator Settings
         /////////////////////////////////////////////
-        if ((RotatorSettingsNP.isNameMatch(name)) && hasInited)    // ALERT does not seem to be updating the cntlr
+        if ((RotatorSettingsNP.isNameMatch(name)) && hasInited)    // TODO does not seem to be updating the cntlr
         {
             LOG_DEBUG("Rotator settings have been modified");
             RotatorSettingsNP.update(values, names, n);
@@ -421,7 +425,7 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
         /////////////////////////////////////////////
         // Shutter Settings
         /////////////////////////////////////////////
-        if ((ShutterSettingsNP.isNameMatch(name))  && hasInited)    // ALERT does not seem to be updating the cntlr
+        if ((ShutterSettingsNP.isNameMatch(name))  && hasInited)    // TODO does not seem to be updating the cntlr
         {
             ShutterSettingsNP.update(values, names, n);
             LOG_DEBUG("Shutter settings have been modified");
@@ -432,6 +436,8 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
             ShutterCalibrationSP.apply();
             return true;
         }
+        ******************************************/
+
         ///////////////////////////////////////////////////////////////////////////////
         /// Home Position
         ///////////////////////////////////////////////////////////////////////////////
@@ -921,7 +927,12 @@ bool Beaver::shutterAbort()
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double voltage)
 {
-    if (hasInited) {
+    INDI_UNUSED(maxSpeed);
+    INDI_UNUSED(minSpeed);
+    INDI_UNUSED(acceleration);
+    INDI_UNUSED(voltage);
+    /***********
+    if (hasInited) {     // TODO this is not updating
         if (shutterIsUp()) {
             if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed)) {
                 LOG_ERROR("Problem setting shutter max speed");
@@ -935,7 +946,7 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
                 LOG_ERROR("Problem setting shutter acceleration");
                 return false;
             }
-            if (!sendCommand("!dome setshuttersafevoltage#", voltage)) {
+            if (!sendCommand("!dome setshuttersafevoltage#", voltage)) {  //TODO might be issue setting .x eg 11.5
                 LOG_ERROR("Problem setting shutter safe voltage");
                 return false;
             }
@@ -948,7 +959,7 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
             LOG_DEBUG("We set the shutters ok");
         }
     }
-
+    *************/
     return true;
 }
 
@@ -1002,6 +1013,11 @@ bool Beaver::shutterGetSettings()
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout)
 {
+    INDI_UNUSED(maxSpeed);
+    INDI_UNUSED(minSpeed);
+    INDI_UNUSED(acceleration);
+    INDI_UNUSED(timeout);
+    /************** TODO not working
     if (hasInited) {
         if (!sendCommand("!domerot setmaxspeed#", maxSpeed)) {
             LOG_ERROR("Problem setting rotator max speed");
@@ -1025,6 +1041,7 @@ bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceler
             return false;
         }
     }
+    ***************/
     return true;
 }
 
