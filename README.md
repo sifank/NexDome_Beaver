@@ -1,14 +1,15 @@
 ALERTS
 ======
 
-20211221 Version 0.3
+20211222 Version 0.4
 
 Do monitor the Release Notes to see what's going on and determine if you need to clone this again.
 
 Anything major I'll document in this space here.
 
-- Do not use the Dome CW and CCW buttons (see Main Tab below), those are a work in process.
-- There is an issue with the rotator controller where after a power cycle, it will sometimes 'humm' instead of moving.  It's actually moving, but very very slowly.  This happens because the controller had reset it's max/min/accel params to zero.  I'm trying to creat a work-around for this atm.
+- Shutter max/min/accel/safevoltage is not updating, don't use
+- Network connection has not been tested yet, use USB
+- Dome CW and CCW are working now, but I need to test those more
 - At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
   - Update the firmware
@@ -69,8 +70,7 @@ Before you Start
   - (Reference the Slaving Tab below)
 - Initialize the rotator and shutter
   - (Reference both the Rotator and Shutter tabs)
-
-- I placed a shutter battery voltage indicator on the bottom of the Main tab, so that we can be alert to a low battery and take action.
+- Do monitor the shutter battery field (see Main tab)
 
 OPERATIONS
 ==========
@@ -96,7 +96,6 @@ Network:
 The INDI driver version is listed under Driver Info (that's this software)
 
 Beaver controller's firmware version is listed on the Beaver line.
-
 
 Main Tab
 --------
@@ -129,7 +128,7 @@ Options Tab
 
 You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, go to the Options tabs and click Save configuration to save the driver settings.
 
-Telescope Policy: Telescope policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
+Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
 
 Slaving Tab
 -----------
@@ -162,7 +161,7 @@ Rotator Tab
     - If the controller has some other value for home (other than zero), do a find home and set it to zero
     - Then either with the rotator's button or via the INDI driver, move the dome slit to north
     - Read the current az position from the Main tab of the INDI driver and set the Home Position field on the Rotator tab to this value
-- The Shutter Home and Measure Home functions will calculate and set all the max/min/acceleration/timeout settings
+- The 'AutoCalibrate' button will find the home sensor then calculate and set all the max/min/acceleration/timeout settings
   - You should not change these unless you really know what you are doing!
   - If either the rotator or shutter unit is turned off (zero values for the max/min, etc), you should redo the home procedures
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button
@@ -180,8 +179,7 @@ Shutter Tab
 
 - NOTE:  This tab will not show up unless the rotator controller is communicating with the shutter
   - When turning the shutter power on, it can take up to 20 seconds for communication to be established
-- Reference the Rotator section above for additional information that applies to the shutter as well
-- The 'Find Home' button will exercise the shutter through it's full range from closed to open.  It will then set all these fields appropriately.
+- The 'AutoCalibrate' button will exercise the shutter through it's full range from closed to open.  It will then set all these fields appropriately.
   - You really should not change these unless you know what you are doing!
   - To reset shutter parameters back to defaults, click the 'Find Home' button.
 - If these values are zero, click on the 'Find Home' button to initialize them
@@ -198,7 +196,7 @@ Presets Tab
 ![Presets Tab](Assets/PresetsTab.png)
 
 Allows you to set 3 rotator positions for convenient locations of your dome.
-- Example, maybe you need a ladder to access the dome or shutter.  One preset could rotate the dome so that's it's more convenient.
+- Example, maybe you need a ladder to access the dome or shutter for maintenance.  One preset could rotate the dome so that's it's more convenient.
 
   
 ISSUES
