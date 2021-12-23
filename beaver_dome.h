@@ -110,7 +110,7 @@ class Beaver : public INDI::Dome
         ///////////////////////////////////////////////////////////////////////////////
         /// Shutter Motion Control
         ///////////////////////////////////////////////////////////////////////////////
-        bool shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout, double voltage);
+        bool shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double voltage);
         bool shutterGetSettings();
         bool shutterFindHome();
         bool shutterAbort();
@@ -120,6 +120,7 @@ class Beaver : public INDI::Dome
         /// Communication Functions
         ///////////////////////////////////////////////////////////////////////////////
         bool sendCommand(const char * cmd, double &res);
+        bool issueHdwrCmd(const char * cmd, const char * response);
         void hexDump(char * buf, const char * data, int size);
         std::vector<std::string> split(const std::string &input, const std::string &regex);
 
@@ -128,6 +129,8 @@ class Beaver : public INDI::Dome
         ///////////////////////////////////////////////////////////////////////////////
         // Beaver Firmware Version
         INDI::PropertyText FirmwareVersionTP {1};
+        // Factory reset
+        INDI::PropertySwitch FactoryResetSP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
         // Goto Home
@@ -162,13 +165,12 @@ class Beaver : public INDI::Dome
             SHUTTER_HOME_FIND
         };
         // Shutter Configuration
-        INDI::PropertyNumber ShutterSettingsNP {5};
+        INDI::PropertyNumber ShutterSettingsNP {4};
         enum
         {
             SHUTTER_MAX_SPEED,
             SHUTTER_MIN_SPEED,
             SHUTTER_ACCELERATION,
-            SHUTTER_TIMEOUT,
             SHUTTER_SAFE_VOLTAGE
         };
         // Rotator Configuration
@@ -200,4 +202,6 @@ class Beaver : public INDI::Dome
         bool shutterPresent;
         int domeDir = 1;
         double lastAzDiff = 1;
+        bool hasInited = false;
+
 };
