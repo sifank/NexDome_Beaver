@@ -7,7 +7,7 @@ Do monitor the Release Notes to see what's going on and determine if you need to
 
 Anything major I'll document in this space here.
 
-- Shutter max/min/accel/safevoltage is not updating, don't use
+- Setting the Rotator and Shutter max/min/accel/safevoltage is disabled for now
 - Network connection has not been tested yet, use USB
 - Dome CW and CCW are working now, but I need to test those more
 - At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
