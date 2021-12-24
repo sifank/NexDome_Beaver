@@ -1,21 +1,3 @@
-ALERTS
-======
-
-20211222 Version 0.4
-
-Do monitor the Release Notes to see what's going on and determine if you need to clone this again.
-
-Anything major I'll document in this space here.
-
-- Setting the Rotator and Shutter max/min/accel/safevoltage is disabled for now
-- Network connection has not been tested yet, use USB
-- Dome CW and CCW are working now, but I need to test those more
-- At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
-  - Set IP address if you want to use the network
-  - Update the firmware
-
-This document is also a work in process...
-
 Lunatico NexDome Beaver INDI Driver
 =========================================
 This package provides the INDI driver for Lunatico NexDome Beaver controller.
@@ -25,6 +7,22 @@ NexDome is a classic observatory dome with more than 100 degrees of shutter open
 The driver is compatible with Beaver firmware version 1.0 or higher.
 
 INDI NexDome Beaver driver is currently only released in beta form from a separate git repository. It is compatible with libindi >= v1.8.2
+
+ALERTS
+======
+20211224 Version 0.4
+
+Read the Release Notes.
+
+Status Overview:
+- Setting the Rotator and Shutter max/min/accel/safevoltage is disabled for now
+- Network connection has not been tested yet, use USB
+- Added factory reset back in, but not working
+- Rotator/Shutter settings are set to RO until I find working solution
+
+- At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
+  - Set IP address if you want to use the network
+  - Update the firmware
 
 INSTALL
 =======
