@@ -1,3 +1,12 @@
+- Version 0.5 20211224
+  - fixed version (split sendCommand in 2 parts, returns double the other returns char*)
+  - fixed status commands to return correctly
+  - fixed park so that is doesn't set if rotator is at the park az
+  - general cleanup
+  - KNOWN ISSUES:
+    - Added factory reset back in, but not working
+    - Rotator/Shutter settings are set to RO until I find working solution
+
 - Version 0.4 20211222:
   - Default baudrate is now set to 115200
   - Removed shutter timeout - cmd not avail in the cntlr, it's autocalculated by the cntlr now
