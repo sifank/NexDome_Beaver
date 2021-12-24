@@ -26,3 +26,4 @@
     - The Motion fields (Dome CW and Dome CCW) occasionally have issues and crash all of Kstars.  The work-around is to enter the number of degrees you want to move in the "Relative Position" field, using either positive (CW) or negative (CCW) numbers.
     
 - Version 0.1, 20211218:  Initial release in beta.
+
