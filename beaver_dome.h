@@ -58,8 +58,8 @@ class Beaver : public INDI::Dome
         virtual bool saveConfigItems(FILE * fp) override;
 
         // Parking
-        virtual IPState Park() override;
-        virtual IPState UnPark() override;
+        //virtual IPState Park() override;
+        //virtual IPState UnPark() override;
 
         // Beaver status
         enum
@@ -114,13 +114,15 @@ class Beaver : public INDI::Dome
         bool shutterGetSettings();
         bool shutterFindHome();
         bool shutterAbort();
-        bool shutterIsUp();
+        bool shutterOnLine();
 
         ///////////////////////////////////////////////////////////////////////////////
         /// Communication Functions
         ///////////////////////////////////////////////////////////////////////////////
         bool sendCommand(const char * cmd, double &res);
-        bool issueHdwrCmd(const char * cmd, const char * response);
+        bool sendRawCommand(const char * cmd, char *resString);
+        bool getDomeStatus(uint16_t &domeStatus);
+        //bool issueHdwrCmd(const char * cmd, const char * response);
         void hexDump(char * buf, const char * data, int size);
         std::vector<std::string> split(const std::string &input, const std::string &regex);
 
@@ -129,8 +131,10 @@ class Beaver : public INDI::Dome
         ///////////////////////////////////////////////////////////////////////////////
         // Beaver Firmware Version
         INDI::PropertyText FirmwareVersionTP {1};
-        // Factory reset
-        INDI::PropertySwitch FactoryResetSP {1};
+        // Rotator Factory reset
+        INDI::PropertySwitch RFactoryResetSP {1};
+        // Shutter Factory reset
+        INDI::PropertySwitch SFactoryResetSP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
         // Goto Home
@@ -199,7 +203,6 @@ class Beaver : public INDI::Dome
         static constexpr const uint8_t DRIVER_TIMEOUT {3};
         // Maximum buffer for sending/receving.
         static constexpr const uint8_t DRIVER_LEN {128};
-        bool shutterPresent;
         int domeDir = 1;
         double lastAzDiff = 1;
         bool hasInited = false;
