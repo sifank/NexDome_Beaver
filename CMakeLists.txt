@@ -11,7 +11,7 @@ SET(RULES_INSTALL_DIR "/lib/udev/rules.d/")
 find_package(INDI REQUIRED)
 
 set (BEAVER_VERSION_MAJOR 0)
-set (BEAVER_VERSION_MINOR 4)
+set (BEAVER_VERSION_MINOR 5)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/indi_beaver.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/indi_beaver.xml )
