@@ -6,6 +6,12 @@
   - KNOWN ISSUES:
     - Added factory reset back in, but not working
     - Rotator/Shutter settings are set to RO until I find working solution
+  - TODO:
+    - Find a solution for setting rotator/dome parameters
+    - Fix factory reset
+    - Test alt dome rel move
+    - Test network connection
+    - 'Color' buttons and status correctly
 
 - Version 0.4 20211222:
   - Default baudrate is now set to 115200
