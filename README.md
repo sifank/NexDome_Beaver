@@ -10,7 +10,7 @@ INDI NexDome Beaver driver is currently only released in beta form from a separa
 
 ALERTS
 ======
-20211224 Version 0.4
+20211224 Version 0.5
 
 Read the Release Notes.
 
