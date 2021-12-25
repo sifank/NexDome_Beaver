@@ -16,9 +16,8 @@ Read the Release Notes.
 
 Status Overview:
 - Setting the Rotator and Shutter max/min/accel/safevoltage is disabled for now
+  - Rotator/Shutter settings are set to RO
 - Network connection has not been tested yet, use USB
-- Added factory reset back in, but not working
-- Rotator/Shutter settings are set to RO until I find working solution
 
 - At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
