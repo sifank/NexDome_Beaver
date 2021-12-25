@@ -4,11 +4,10 @@
   - fixed park so that is doesn't set if rotator is at the park az
   - general cleanup
   - KNOWN ISSUES:
-    - Added factory reset back in, but not working
     - Rotator/Shutter settings are set to RO until I find working solution
   - TODO:
     - Find a solution for setting rotator/dome parameters
-    - Fix factory reset
+    - Fix and add factory reset for both rotator and dome
     - Test alt dome rel move
     - Test network connection
     - 'Color' buttons and status correctly
