@@ -19,13 +19,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-/* ISSUES:
-   - rel move over home set to park and disables moves
-   - version input needs work (crashes if fully enabled)
-   - isNumber or Switch seems to be called at start
-   - set shutter params not working (?)
-   - need to 'paint' switches and 'dots' with correct status
-   - test rel move +/- moves
+/* TODO:
+    - Find a solution for setting rotator/dome parameters
+      - isNumber or Switch seems to be called at start
+    - Fix factory reset
+    - Test alt dome rel move
+    - Test network connection
+    - 'Color' buttons and status correctly
 */
 
 #include "beaver_dome.h"
@@ -182,7 +182,7 @@ bool Beaver::updateProperties()
         defineProperty(&RotatorParkSP);
         defineProperty(&RotatorSettingsNP);
         defineProperty(&RotatorStatusTP);
-        defineProperty(&RFactoryResetSP);
+        //defineProperty(&RFactoryResetSP);
         if (shutterOnLine()) {
             defineProperty(&ShutterCalibrationSP);
             defineProperty(&ShutterSettingsNP);
@@ -202,7 +202,7 @@ bool Beaver::updateProperties()
         deleteProperty(RotatorSettingsNP.getName());
         deleteProperty(RotatorParkSP.getName());
         deleteProperty(RotatorStatusTP.getName());
-        deleteProperty(RFactoryResetSP.getName());
+        //deleteProperty(RFactoryResetSP.getName());
         deleteProperty(ShutterCalibrationSP.getName());
         deleteProperty(ShutterSettingsNP.getName());
         deleteProperty(ShutterStatusTP.getName());
