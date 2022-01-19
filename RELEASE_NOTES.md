@@ -1,3 +1,16 @@
+- Version 0.6 20220118
+  - fixed a number of issues in the handling of the status and reseting to idle
+  - Will not offer setting of dome/shutter low level parameters
+  - Will not offer factory resets (use autocalibrate instead)
+  - KNOWN ISSUES:
+    - EKOS dome page: move abs and rel greyed out (use INDI window instead)
+    - EKOS dome page: park and unpark greyed out (use INDI window instead)
+  - TODO:
+    - Implement park/unpark via INDI calls
+    - Add shutter open/close on park policy settings
+    - Add option to close if raining (via snoop device)
+    - Test network connections
+
 - Version 0.5 20211224
   - fixed version (split sendCommand in 2 parts, returns double the other returns char*)
   - fixed status commands to return correctly
