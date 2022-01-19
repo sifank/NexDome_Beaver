@@ -27,7 +27,7 @@ Status Overview:
 
 INSTALL
 =======
-- Reference the INSTALL document (above)
+- Reference the INSTALL document.
 
 FEATURES
 ========
