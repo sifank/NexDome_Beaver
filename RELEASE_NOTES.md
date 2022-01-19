@@ -1,3 +1,15 @@
+- Version 0.7 20220119
+  - Fixed parking and unparking
+  - All options on the EKOS dome tab are now working
+  - KNOWN ISSUES:
+    - Add test is slaving, don't allow moves
+    - Dome unpark status not being shown correctly (but is working)
+    - Park should disable slaving, or slaving should not allow park
+  - TODO:
+    - Add shutter open/close on park policy settings
+    - Add option to close if raining (via snoop device)
+    - Test network connections
+
 - Version 0.6 20220118
   - fixed a number of issues in the handling of the status and reseting to idle
   - Will not offer setting of dome/shutter low level parameters
