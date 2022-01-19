@@ -19,15 +19,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-/* TODO:
-    - Find a solution for setting rotator/dome parameters
-      - isNumber or Switch seems to be called at start
-    - Fix factory reset
-    - Test alt dome rel move
-    - Test network connection
-    - 'Color' buttons and status correctly
+/*
+ * TODO:
+ *  Don't move if slaving is on
+ * dome unparked not being set
+ * park should disable slaving, or not be allowed if slaving is on
 */
-
 #include "beaver_dome.h"
 
 #include "indicom.h"
@@ -49,12 +46,7 @@ static std::unique_ptr<Beaver> dome(new Beaver());
 Beaver::Beaver()
 {
     setVersion(BEAVER_VERSION_MAJOR, BEAVER_VERSION_MINOR);
-    // TBD consider implementing CAN_PARK instead of having sepearte tab ... or, consolodate on Site Mgmt tab ...
-    SetDomeCapability(DOME_CAN_ABORT |
-                      DOME_CAN_ABS_MOVE |
-                      DOME_CAN_REL_MOVE);
-                      // DOME_CAN_PARK | removing this and building our own, allows us to place the fields where we want them
-                      //                 creating a more unifying tab structure
+    SetDomeCapability(DOME_CAN_ABORT | DOME_CAN_ABS_MOVE | DOME_CAN_REL_MOVE | DOME_CAN_PARK);
                       // DOME_CAN_SYNC   this won't work - use 'set home position' instead
                       //                 dome sync will be reset any time the magnet passes over the dome cntlr!
 
@@ -82,11 +74,6 @@ bool Beaver::initProperties()
     // Shutter Voltage
     ShutterVoltsNP[0].fill("SHUTTERvolts", "Volts", "%.2f", 0.00, 15.00, 0.00, 0.00);
     ShutterVoltsNP.fill(getDeviceName(), "SHUTTERVOLTS", "Shutter", MAIN_CONTROL_TAB, IP_RO, 60, IPS_OK);
-
-    // Rotator Park
-    RotatorParkSP[ROTATOR_PARK].fill("ROTATOR_PARK", "Park", ISS_OFF);
-    RotatorParkSP[ROTATOR_UNPARK].fill("ROTATOR_UNPARK", "UnPark", ISS_OFF);
-    RotatorParkSP.fill(getDefaultName(), "ROTATOR_Park", "Rotator", MAIN_CONTROL_TAB, IP_RW, ISR_ATMOST1, 60, IPS_IDLE);
 
     // Rotator Home
     GotoHomeSP[0].fill("ROTATOR_HOME_GOTO", "Home", ISS_OFF);
@@ -121,11 +108,6 @@ bool Beaver::initProperties()
     // ALERT set to readonly for now
     RotatorSettingsNP.fill(getDeviceName(), "ROTATOR_SETTINGS", "Settings", ROTATOR_TAB, IP_RO, 60, IPS_IDLE);
 
-    // Rotator Factory Reset
-    RFactoryResetSP[0].fill("RFACTORY_RESET", "Reset", ISS_OFF);
-    RFactoryResetSP.fill(getDefaultName(), "RFACTORY_Reset", "Factory", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
-                              IPS_IDLE);
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Shutter settings tab
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,17 +123,11 @@ bool Beaver::initProperties()
     // ALERT Set to RO for now
     ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RO, 60, IPS_IDLE);
 
-    // Shutter Factory Reset
-    SFactoryResetSP[0].fill("SFACTORY_RESET", "Reset", ISS_OFF);
-    SFactoryResetSP.fill(getDefaultName(), "SFACTORY_Reset", "Factory", ROTATOR_TAB, IP_RW, ISR_ATMOST1, 60,
-                              IPS_IDLE);
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // INFO Tab
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Beaver Firmware Version
-    VersionTP[VERSION_CNTLR].fill("CVERSION", "Controller", "");
-    VersionTP[VERSION_INDI].fill("IVERSION", "INDI Driver", "");
+    VersionTP[0].fill("CVERSION", "Controller", "");
     VersionTP.fill(getDeviceName(), "DOME_FIRMWARE", "Version", CONNECTION_TAB, IP_RO, 0, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +148,19 @@ bool Beaver::updateProperties()
 
     if (isConnected())
     {
-        InitPark();
+        double curPark;
+        if (!sendCommand("!domerot getpark#", curPark))
+            return false;
+        if (InitPark())
+        {
+            SetAxis1ParkDefault(curPark);
+        }
+        else
+        {
+            SetAxis1Park(curPark);
+            SetAxis1ParkDefault(curPark);
+        }
+        TimerHit();
 
         defineProperty(&VersionTP);
         defineProperty(&HomePositionNP);
@@ -180,16 +168,13 @@ bool Beaver::updateProperties()
         defineProperty(&ParkPosition2CurrentSP);
         defineProperty(&RotatorCalibrationSP);
         defineProperty(&GotoHomeSP);
-        defineProperty(&RotatorParkSP);
         defineProperty(&RotatorSettingsNP);
         defineProperty(&RotatorStatusTP);
-        //defineProperty(&RFactoryResetSP);
         if (shutterOnLine()) {
             defineProperty(&ShutterCalibrationSP);
             defineProperty(&ShutterSettingsNP);
             defineProperty(&ShutterStatusTP);
             defineProperty(&ShutterVoltsNP);
-            //defineProperty(&SFactoryResetSP);
         }
     }
     else
@@ -201,17 +186,13 @@ bool Beaver::updateProperties()
         deleteProperty(ParkPositionNP.getName());
         deleteProperty(ParkPosition2CurrentSP.getName());
         deleteProperty(RotatorSettingsNP.getName());
-        deleteProperty(RotatorParkSP.getName());
         deleteProperty(RotatorStatusTP.getName());
-        //deleteProperty(RFactoryResetSP.getName());
         deleteProperty(ShutterCalibrationSP.getName());
         deleteProperty(ShutterSettingsNP.getName());
         deleteProperty(ShutterStatusTP.getName());
         deleteProperty(ShutterVoltsNP.getName());
-        //deleteProperty(SFactoryResetSP.getName());
 
     }
-
     return true;
 }
 
@@ -260,16 +241,11 @@ bool Beaver::echo()
     LOGF_DEBUG("Version string returned %s", resString.c_str());
     std::regex e(R"(.*:\d*:(.*))");
     std::sregex_iterator iter(resString.begin(), resString.end(), e);
-    VersionTP[VERSION_CNTLR].setText((*iter)[1]);
-
-    // set the INDI driver version
-    char iversion[DRIVER_LEN] = {0};
-    snprintf(iversion, DRIVER_LEN, "%i:%i", BEAVER_VERSION_MAJOR, BEAVER_VERSION_MINOR);
-    VersionTP[VERSION_INDI].setText(iversion);
+    VersionTP[0].setText((*iter)[1]);
 
     // retrieve the current az from the dome
     if (rotatorGetAz())
-        LOGF_INFO("Dome reports currently at az: %.1f", res);
+        LOGF_INFO("Dome reports az: %.1f", DomeAbsPosN[0].value);
     else
         return false;
 
@@ -286,7 +262,7 @@ bool Beaver::echo()
         return false;
     else {
         ParkPositionNP[0].value = res;
-        LOGF_INFO("Dome reports park az as: %.1f", res);
+        LOGF_INFO("Dome reports park: %.1f", res);
     }
     
     // get current rotator settings
@@ -359,28 +335,6 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
         }
 
         /////////////////////////////////////////////
-        // Rotator Park
-        /////////////////////////////////////////////
-        if (RotatorParkSP.isNameMatch(name))
-        {
-            RotatorParkSP.update(states, names, n);
-            bool rc = false;
-            switch (RotatorParkSP.findOnSwitchIndex())
-            {
-                case ROTATOR_PARK:
-                    rc = rotatorGotoPark();
-                    RotatorParkSP.setState(rc ? IPS_BUSY : IPS_ALERT);
-                    break;
-                case ROTATOR_UNPARK:
-                    rc = rotatorUnPark();
-                    RotatorParkSP.setState(rc ? IPS_BUSY : IPS_ALERT);
-                    break;
-            }
-            RotatorParkSP.apply();
-            return true;
-        }
-
-        /////////////////////////////////////////////
         // Shutter Calibration
         /////////////////////////////////////////////
         if (ShutterCalibrationSP.isNameMatch(name))
@@ -393,54 +347,6 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
             ShutterCalibrationSP.apply();
             return true;
         }
-        /**** hold off on these - issues
-        /////////////////////////////////////////////
-        // Rotator Factory Reset
-        /////////////////////////////////////////////
-        if (RFactoryResetSP.isNameMatch(name))
-        {  // ALERT TODO not working!
-            double res = 0;
-            RFactoryResetSP.update(states, names, n);
-            if (!sendCommand("!seletek resetfs 1#", res)) {
-                LOG_ERROR("Problem doing a rotator factory reset");
-                RFactoryResetSP.setState(IPS_ALERT);
-                return false;
-            }
-            sleep(1000);
-            if (!sendCommand("!seletek reboot#", res)) {
-                LOG_ERROR("Problem doing a rotator factory reset");
-                RFactoryResetSP.setState(IPS_ALERT);
-                return false;
-            }
-            LOG_WARN("Just performed a rotator factory reset");
-            RFactoryResetSP.setState(IPS_OK);
-            RFactoryResetSP.apply();
-            return true;
-        }
-        /////////////////////////////////////////////
-        // Shutter Factory Reset
-        /////////////////////////////////////////////
-        if (SFactoryResetSP.isNameMatch(name))
-        {  // TODO test
-            double res = 0;
-            SFactoryResetSP.update(states, names, n);
-            if (!sendCommand("!dome sendtoshutter \"seletek resetfs 1\"#", res)) {
-                LOG_ERROR("Problem doing a shutter factory reset");
-                SFactoryResetSP.setState(IPS_ALERT);
-                return false;
-            }
-            sleep(1000);
-            if (!sendCommand("!dome sendtoshutter \"seletek reboot\"#", res)) {
-                LOG_ERROR("Problem doing a rotator factory reset");
-                RFactoryResetSP.setState(IPS_ALERT);
-                return false;
-            }
-            LOG_WARN("Just performed a shutter factory reset");
-            SFactoryResetSP.setState(IPS_OK);
-            SFactoryResetSP.apply();
-            return true;
-        }
-        *****/
     }
 
     return INDI::Dome::ISNewSwitch(dev, name, states, names, n);
@@ -563,26 +469,27 @@ void Beaver::TimerHit()
     // Is rotator idle?
     if (!(domeStatus & DOME_STATUS_ROTATOR_MOVING)) {
 
-        // Parking completed
-        if (getDomeState() == DOME_PARKING)  {
-            //SetParked(true);
-            setDomeState(DOME_PARKED);
-            RotatorStatusTP[0].setText("Parked");
-            RotatorStatusTP.setState(IPS_OK);
-            RotatorParkSP.setState(IPS_OK);
-            RotatorParkSP.apply();
-            LOG_DEBUG("Dome is parked.");
-        }
-        // UnParking completed
-        else if (getDomeState() == DOME_UNPARKING) {
-            LOG_ERROR("Timer UnPaark - should not get her!!");
-            //SetParked(false);
-            setDomeState(DOME_IDLE);
-            RotatorStatusTP[0].setText("unParked");
-            RotatorStatusTP.setState(IPS_OK);
-            RotatorParkSP.setState(IPS_OK);
-            RotatorParkSP.apply();
-            LOG_DEBUG("Dome is unParked.");
+        if (rotatorIsParked()) {
+            // Parking completed
+            if (getDomeState() == DOME_PARKING)  {
+                SetParked(true);
+                setDomeState(DOME_PARKED);
+                RotatorStatusTP[0].setText("Parked");
+                RotatorStatusTP.setState(IPS_OK);
+                //RotatorParkSP.setState(IPS_OK);
+                //RotatorParkSP.apply();
+                LOG_DEBUG("Dome is parked.");
+            }
+            // UnParking completed
+            else if (getDomeState() == DOME_UNPARKING) {
+                SetParked(false);
+                setDomeState(DOME_UNPARKED);   // ALERT this is not being set
+                RotatorStatusTP[0].setText("unParked");
+                RotatorStatusTP.setState(IPS_OK);
+                //RotatorParkSP.setState(IPS_OK);
+                //RotatorParkSP.apply();
+                LOG_DEBUG("Dome is unParked.");
+            }
         }
         // Measuring Home completed
         else if (!strcmp(RotatorStatusTP[0].getText(), "Measuring Home")) {
@@ -847,7 +754,7 @@ bool Beaver::rotatorSetHome(double az)
 /////////////////////////////////////////////////////////////////////////////
 /// Rotator park
 /////////////////////////////////////////////////////////////////////////////
-bool Beaver::rotatorGotoPark()
+IPState Beaver::Park()
 {
     // check shutterparkpolicy and close shutter if so
     double res;
@@ -855,9 +762,21 @@ bool Beaver::rotatorGotoPark()
         setDomeState(DOME_PARKING);
         RotatorStatusTP[0].setText("Parking");
         RotatorStatusTP.apply();
-        return true;
+        return IPS_BUSY;
     }
-    return false;
+    return IPS_ALERT;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// Rotator unpark
+/////////////////////////////////////////////////////////////////////////////
+IPState Beaver::UnPark()
+{
+    // check shutterparkpolicy and open shutter if so
+    setDomeState(DOME_UNPARKING);
+    RotatorStatusTP[0].setText("Dome UnParking");
+    RotatorStatusTP.apply();
+    return IPS_OK;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -893,19 +812,6 @@ bool Beaver::SetCurrentPark() {
         return true;
     }
     return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-/// Rotator unpark
-/////////////////////////////////////////////////////////////////////////////
-bool Beaver::rotatorUnPark()
-{
-    // check shutterparkpolicy and open shutter if so
-    setDomeState(DOME_IDLE);
-    RotatorStatusTP[0].setText("Idle @ park");
-    RotatorStatusTP.apply();
-    //SetParked(false);
-    return IPS_OK;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -953,6 +859,8 @@ bool Beaver::rotatorFindHome()
     return false;
 }
 
+
+// ALERT not used
 /////////////////////////////////////////////////////////////////////////////
 /// Rotator at home?
 /////////////////////////////////////////////////////////////////////////////
@@ -963,13 +871,11 @@ bool Beaver::rotatorIsHome()
         LOG_ERROR("Error checking home");
         return false;
     }
-    LOGF_INFO("DIAG Rotator Home? %s", (status == 1) ? "true" : "false");
-    if (status == 1) {
-        RotatorStatusTP[0].setText("Home");
-        RotatorStatusTP.apply();
+    LOGF_DEBUG("Rotator Home? %s", (status == 1) ? "true" : "false");
+    if (status == 1)
         return true;
-    }
-    return false;
+    else
+        return false;
 }
 
 
@@ -983,16 +889,11 @@ bool Beaver::rotatorIsParked()
         LOG_ERROR("Error checking park");
         return false;
     }
-    LOGF_INFO("DIAG Rotator Parked? %s", (status == 1) ? "true" : "false");
-
-    // TODO only set 'Parked' if it was asked to park (not everytime it's at the park location!
-    // getDomeState() == DOME_PARKING
-    if (status == 1) {
-        RotatorStatusTP[0].setText("Parked");
-        RotatorStatusTP.apply();
+    LOGF_DEBUG("Rotator Parked? %s", (status == 1) ? "true" : "false");
+    if (status == 1)
         return true;
-    }
-    return false;
+    else
+        return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////

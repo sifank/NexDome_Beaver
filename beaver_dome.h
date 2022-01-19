@@ -59,8 +59,8 @@ class Beaver : public INDI::Dome
         virtual bool saveConfigItems(FILE * fp) override;
 
         // Parking
-        //virtual IPState Park() override;
-        //virtual IPState UnPark() override;
+        virtual IPState Park() override;
+        virtual IPState UnPark() override;
 
         // Beaver status
         enum
@@ -123,7 +123,6 @@ class Beaver : public INDI::Dome
         bool sendCommand(const char * cmd, double &res);
         bool sendRawCommand(const char * cmd, char *resString);
         bool getDomeStatus(uint16_t &domeStatus);
-        //bool issueHdwrCmd(const char * cmd, const char * response);
         void hexDump(char * buf, const char * data, int size);
         std::vector<std::string> split(const std::string &input, const std::string &regex);
 
@@ -131,16 +130,7 @@ class Beaver : public INDI::Dome
         /// Properties
         ///////////////////////////////////////////////////////////////////////////////
         // Beaver Firmware Version
-        INDI::PropertyText VersionTP {2};
-        enum
-        {
-            VERSION_CNTLR,
-            VERSION_INDI
-        };
-        // Rotator Factory reset
-        INDI::PropertySwitch RFactoryResetSP {1};
-        // Shutter Factory reset
-        INDI::PropertySwitch SFactoryResetSP {1};
+        INDI::PropertyText VersionTP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
         // Goto Home
@@ -161,12 +151,6 @@ class Beaver : public INDI::Dome
         {
             ROTATOR_HOME_FIND,
             ROTATOR_HOME_MEASURE
-        };
-        INDI::PropertySwitch RotatorParkSP {2};
-        enum
-        {
-            ROTATOR_PARK,
-            ROTATOR_UNPARK
         };
         // Shutter Calibration
         INDI::PropertySwitch ShutterCalibrationSP {1};
