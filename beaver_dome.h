@@ -47,6 +47,7 @@ class Beaver : public INDI::Dome
         virtual IPState MoveAbs(double az) override;
         virtual IPState MoveRel(double azDiff) override;
         virtual IPState Move(DomeDirection dir, DomeMotionCommand operation) override;
+        virtual bool SetCurrentPark();
 
         // Shutter
         virtual IPState ControlShutter(ShutterOperation operation) override;
@@ -130,7 +131,12 @@ class Beaver : public INDI::Dome
         /// Properties
         ///////////////////////////////////////////////////////////////////////////////
         // Beaver Firmware Version
-        INDI::PropertyText FirmwareVersionTP {1};
+        INDI::PropertyText VersionTP {2};
+        enum
+        {
+            VERSION_CNTLR,
+            VERSION_INDI
+        };
         // Rotator Factory reset
         INDI::PropertySwitch RFactoryResetSP {1};
         // Shutter Factory reset
