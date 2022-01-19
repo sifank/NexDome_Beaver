@@ -15,7 +15,7 @@ ALERTS
 Read the Release Notes.
 
 Status Overview:
-- Will not off setting the Rotator and Shutter, use autocal instead
+- Will not offer setting the Rotator and Shutter, use autocal instead
 - Network connection has not been tested yet, use USB
 - Move Abs/Rel: need to click twice after setting Relative Position amount field.
   - Has to do with INDI, 1st click starts, 2nd stops.  However in this case it will only move the amount set.
