@@ -17,8 +17,6 @@ Read the Release Notes.
 Status Overview:
 - Will not offer setting the Rotator and Shutter, use autocal instead
 - Network connection has not been tested yet, use USB
-- Move Abs/Rel: need to click twice after setting Relative Position amount field.
-  - Has to do with INDI, 1st click starts, 2nd stops.  However in this case it will only move the amount set.
 
 - Use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
@@ -103,8 +101,7 @@ Main Tab
 
 Shutter Open/Close will only show up if the Shutter controller is up and communicating with the Rotator controller.
 
-CAUTION: I've caught the Dome CW and CCW buttons crashing Kstars!  This part is a work in progress.
-- The work-around is to use the Relative Position field.  Fill in the relative amount to move (+ CW, - CCW) and click Set.
+Move Relative buttons are meant to start/stop motion.  However, instead they move the dome by the amount set by the relative amount set in t he field above.  As a result, you need to press the CW or CCW button twice (once to start, once to stop).
 
 Absolute Position will move the dome AZ relative to what you set the Home Offset to, which if set according to the instruction in the Rotator Tab, this will be from true north.
 
@@ -112,7 +109,9 @@ Home is defined as where the rotator controller's index magnet is located.  This
 
 Park position can be set anywhere.  This is set via the Rotator Tab.
 - Usually this is set to where the shutter charger is located, so the shutter will be charging when parked.
-  - Some considerations:  What is the dominent wind direction? (I find that placing the front of the shutter into the wind, it keeps the dryest).  Out of the way from doors, maybe bays, etc.
+  - Some considerations:  
+    - What is the dominent wind direction? (I find it keeps the dryest if the front of the shutter is placed into the wind).  
+    - Out of the way from doors, bays, etc.
 - Note: clicking on Park will move to the set park position and also prevent any rotator movement/action, until UnPark is clicked.
 
 Dome and Shutter Status fields will display any errors, idle, moving, etc.
