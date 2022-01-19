@@ -10,18 +10,20 @@ INDI NexDome Beaver driver is currently only released in beta form from a separa
 
 ALERTS
 ======
-20211224 Version 0.5
+20220118 Version 0.6
 
 Read the Release Notes.
 
 Status Overview:
-- Setting the Rotator and Shutter max/min/accel/safevoltage is disabled for now
-  - Rotator/Shutter settings are set to RO
+- Will not off setting the Rotator and Shutter, use autocal instead
 - Network connection has not been tested yet, use USB
+- Move Abs/Rel: need to click twice after setting Relative Position amount field.
+  - Has to do with INDI, 1st click starts, 2nd stops.  However in this case it will only move the amount set.
 
-- At present, you will need to use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
+- Use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
   - Update the firmware
+  - Reset rotator or shutter low level settings
 
 INSTALL
 =======
