@@ -10,12 +10,11 @@ INDI NexDome Beaver driver is currently only released in beta form from a separa
 
 ALERTS
 ======
-20220118 Version 0.6
+20220121 Version 0.8
 
 Read the Release Notes.
 
 Status Overview:
-- Will not offer setting the Rotator and Shutter, use autocal instead
 - Network connection has not been tested yet, use USB
 
 - Use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
@@ -127,6 +126,11 @@ Options Tab
 You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, go to the Options tabs and click Save configuration to save the driver settings.
 
 Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
+
+Site Management Tab
+-------------------
+
+TBA
 
 Slaving Tab
 -----------
