@@ -76,7 +76,7 @@ OPERATIONS
 Connection Tab
 --------------
 
-![Connection Tab](Assets/ConnectionTab.png)
+![Connection Tab](Assets/ConnectionsTab.png)
 
 You can connect to the Beaver controller via Serial (USB) or Network
 
