@@ -116,7 +116,7 @@ Options Tab
 
 ![Options Tab](Assets/OptionsTab.png)
 
-You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, go to the Options tabs and click Save configuration to save the driver settings.
+You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, click 'Save configuration' button to save the driver settings.
 
 Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
 
@@ -125,12 +125,6 @@ Site Management Tab
 
 ![Presets Tab](Assets/SiteMgmtTab.png)
 
-Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Position field will correctly index this from north.
-There are three options to set the home position(Home ...ition).
-  - Set the 'Home Position' field by entering the degrees, minutes and seconds of the offset from the home magnet to north
-  - Move the dome to the home magnet sensor and click 'Current'
-  - 'Default' button will set the offset to zero
-  
 Park position can be set anywhere. Usually this is set to where the shutter charger is located, so the shutter will be charging when parked.
 There are four options for setting the park position:
   - Set the 'Park Position' field by entering the degrees, minutes and seconds of the offset from the home magnet to north
@@ -140,6 +134,12 @@ There are four options for setting the park position:
 
 Note: clicking on 'Park' will move to the park position and also prevent any rotator movement/action, until UnPark is clicked.
 
+Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Position field will correctly index this from north.
+There are three options to set the home position(Home ...ition).
+  - Set the 'Home Position' field by entering the degrees, minutes and seconds of the offset from the home magnet to north
+  - Move the dome to the home magnet sensor and click 'Current'
+  - 'Default' button will set the offset to zero
+  
 Slaving Tab
 -----------
 
@@ -165,13 +165,10 @@ Rotator Tab
 
 - Click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
-- The 'AutoCalibrate' button will find the home sensor then calculate and set all the max/min/acceleration/timeout settings
+- The 'Find Home' button will find the home sensor then calculate and set all the max/min/acceleration/timeout settings
   - You should not change these unless you really know what you are doing!
   - If either the rotator or shutter unit is turned off (zero values for the max/min, etc), you should redo the home procedures
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button
-- Park position can be set in two ways:
-  - Enter the degress in the Park Position field
-  - Move the dome to where you want park to be and click on 'Set To Current'
 - To Park or unPark the dome or goto Home, see the Main tab
 
 After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions.
@@ -185,8 +182,7 @@ Shutter Tab
   - When turning the shutter power on, it can take up to 20 seconds for communication to be established
 - The 'AutoCalibrate' button will exercise the shutter through it's full range from closed to open.  It will then set all these fields appropriately.
   - You really should not change these unless you know what you are doing!
-  - To reset shutter parameters back to defaults, click the 'Find Home' button.
-- If these values are zero, click on the 'Find Home' button to initialize them
+- If these values are zero, click on the 'AutoCalibrate' button to initialize them
 - Safe Voltage is the level at which the rotator will execute it's shutter safety proceedure and close the shutter.
 - To open or close the shutter, see the Main Tab.
 
