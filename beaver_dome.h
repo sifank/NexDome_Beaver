@@ -48,6 +48,7 @@ class Beaver : public INDI::Dome
         virtual IPState MoveRel(double azDiff) override;
         virtual IPState Move(DomeDirection dir, DomeMotionCommand operation) override;
         virtual bool SetCurrentPark();
+        virtual bool SetDefaultPark();
 
         // Shutter
         virtual IPState ControlShutter(ShutterOperation operation) override;
@@ -133,12 +134,20 @@ class Beaver : public INDI::Dome
         INDI::PropertyText VersionTP {1};
         // Home offset from north
         INDI::PropertyNumber HomePositionNP {1};
+        // Home set options
+        INDI::PropertySwitch HomeOptionsSP {2};
+        enum
+        {
+            HOMECURRENT,
+            HOMEDEFAULT
+        };
+
         // Goto Home
         INDI::PropertySwitch GotoHomeSP {1};
-        // Park position in az
-        INDI::PropertyNumber ParkPositionNP {1};
-        // Set Park position to current
-        INDI::PropertySwitch ParkPosition2CurrentSP {1};
+          // Park position in az
+          //INDI::PropertyNumber ParkPositionNP {1};
+          // Set Park position to current
+          //INDI::PropertySwitch ParkPosition2CurrentSP {1};
         // Shutter voltage
         INDI::PropertyNumber ShutterVoltsNP {1};
         // Rotator Status        
@@ -195,6 +204,4 @@ class Beaver : public INDI::Dome
         static constexpr const uint8_t DRIVER_LEN {128};
         int domeDir = 1;
         double lastAzDiff = 1;
-        bool hasInited = false;
-
 };
