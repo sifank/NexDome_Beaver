@@ -82,12 +82,12 @@ You can connect to the Beaver controller via Serial (USB) or Network
 
 USB:
 - Look for Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d88d70e0fd44eb11ad70aa52b003b68c-if00-port0 
-  - idVendor=10c4, idProduct=ea60 (execute on linux: lsusb)
+  - idVendor=10c4, idProduct=ea60 (On linux run: lsusb)
 - BaudRate 115200
 
 Network:
 - I am having a problem connecting to the controller, so this is not tested.  Let me know if this works for you.
-- Currently you would have to use the Window's Beaver configuration tool to set the IP address.
+- Currently you would have to use the Window's [Beaver software utility](https://www.nexdome.com/resources) tool to set the IP address.
 - Port should be 10000
 - Connection type is UDP
 
