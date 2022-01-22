@@ -64,6 +64,8 @@ Before you Start
   - This can take up to 20 secs after turning on the shutter
 - Under the Slaving tab: you need to set the parameters for your dome:
   - (Reference the Slaving Tab below)
+- Set the Park and Home positions
+  - (Reference the Site Management Tab below)
 - Initialize the rotator and shutter
   - (Reference both the Rotator and Shutter tabs)
 - Do monitor the shutter battery field (see Main tab)
@@ -104,15 +106,6 @@ Move Relative buttons are meant to start/stop motion.  However, instead they mov
 
 Absolute Position will move the dome AZ relative to what you set the Home Offset to, which if set according to the instruction in the Rotator Tab, this will be from true north.
 
-Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Offset (Rotator Tab) will correctly index this from north.
-
-Park position can be set anywhere.  This is set via the Rotator Tab.
-- Usually this is set to where the shutter charger is located, so the shutter will be charging when parked.
-  - Some considerations:  
-    - What is the dominent wind direction? (I find it keeps the dryest if the front of the shutter is placed into the wind).  
-    - Out of the way from doors, bays, etc.
-- Note: clicking on Park will move to the set park position and also prevent any rotator movement/action, until UnPark is clicked.
-
 Dome and Shutter Status fields will display any errors, idle, moving, etc.
 
 The Shutter Volts field displays the current voltage of the shutter battery.  In combination with the Safe Voltage on the Shutter tab, this can trigger the rotator controller to go into safety mode and call for the shutter to close.
@@ -130,7 +123,22 @@ Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Te
 Site Management Tab
 -------------------
 
-TBA
+![Presets Tab](Assets/SiteMgmtTab.png)
+
+Home is defined as where the rotator controller's index magnet is located.  This can be anywhere convenient (like not by the door, over a bay, etc.).  Setting the Home Position field will correctly index this from north.
+There are three options to set the home position(Home ...ition).
+  - Set the 'Home Position' field by entering the degrees, minutes and seconds of the offset from the home magnet to north
+  - Move the dome to the home magnet sensor and click 'Current'
+  - 'Default' button will set the offset to zero
+  
+Park position can be set anywhere. Usually this is set to where the shutter charger is located, so the shutter will be charging when parked.
+There are four options for setting the park position:
+  - Set the 'Park Position' field by entering the degrees, minutes and seconds of the offset from the home magnet to north
+  - Move the dome to where you want and click 'Current'
+  - 'Default' button sill set park to zero
+  - 'Write Data' button will force a write to ~/.indi/ParkData.xml file which is read on startup
+
+Note: clicking on 'Park' will move to the park position and also prevent any rotator movement/action, until UnPark is clicked.
 
 Slaving Tab
 -----------
@@ -157,12 +165,6 @@ Rotator Tab
 
 - Click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
-- Set the home position degrees (Home ...ition).  This tells the software
-  how many degrees the home sensor magnet is from the North.
-  - One method to do this, depending on whether the controller knows where things are:
-    - If the controller has some other value for home (other than zero), do a find home and set it to zero
-    - Then either with the rotator's button or via the INDI driver, move the dome slit to north
-    - Read the current az position from the Main tab of the INDI driver and set the Home Position field on the Rotator tab to this value
 - The 'AutoCalibrate' button will find the home sensor then calculate and set all the max/min/acceleration/timeout settings
   - You should not change these unless you really know what you are doing!
   - If either the rotator or shutter unit is turned off (zero values for the max/min, etc), you should redo the home procedures
@@ -200,7 +202,6 @@ Presets Tab
 Allows you to set 3 rotator positions for convenient locations of your dome.
 - Example, maybe you need a ladder to access the dome or shutter for maintenance.  One preset could rotate the dome so that's it's more convenient.
 
-  
 ISSUES
 ============
 - Reference the Release Notes (above)
