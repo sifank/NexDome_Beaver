@@ -1,4 +1,10 @@
-- Version 0.8 20220121
+Version 0.9 20220124
+- Fixed shutter set status
+- Fixed sendcommand timer loop
+- Ignoring get shutter voltage occasional errors
+- Changed shutter timeout field to read only (Lunitco does not support setting it)
+
+Version 0.8 20220121
   - Fixed park/unpark/home status
   - Added shutter open/close policy
   - Not adding rain closure - use Watchdog for that, tested and is working
@@ -9,7 +15,7 @@
     - Add test if slaving, don't allow moves
     - Test network connections
 
-- Version 0.7 20220119
+Version 0.7 20220119
   - Fixed parking and unparking
   - All options on the EKOS dome tab are now working
   - KNOWN ISSUES:
@@ -20,7 +26,7 @@
     - Add option to close if raining (via snoop device)
     - Test network connections
 
-- Version 0.6 20220118
+Version 0.6 20220118
   - Fixed a number of issues in the handling of the status and reseting to idle
   - Will not offer setting of dome/shutter low level parameters
   - Will not offer factory resets (use autocalibrate instead)
@@ -33,7 +39,7 @@
     - Add option to close if raining (via snoop device)
     - Test network connections
 
-- Version 0.5 20211224
+Version 0.5 20211224
   - fixed version (split sendCommand in 2 parts, returns double the other returns char*)
   - fixed status commands to return correctly
   - fixed park so that is doesn't set if rotator is at the park az
@@ -47,7 +53,7 @@
     - Test network connection
     - 'Color' buttons and status correctly
 
-- Version 0.4 20211222:
+Version 0.4 20211222:
   - Default baudrate is now set to 115200
   - Removed shutter timeout - cmd not avail in the cntlr, it's autocalculated by the cntlr now
   - Added flag to prevent updating the rotator and shutter settings until everything in initialized
@@ -58,11 +64,11 @@
     - Have not tested network connection, use USB
     - Dome CW and CCW are working now, but I need to test those more
     
-- Version 0.2, 29211219: 
+Version 0.2, 29211219: 
   - Added driver version to Connection tab, updated config.h.cmake with a Beaver version
   - ISSUES:
     - Can only connect with USB (I'm not able to test the network connection yet - issue with my controller)
     - I caught the dome rotating to Park about 10 secs after bringing up the driver.  This only happened once and I'm not able to reproduce.  Please contact me if you experience this.
     - The Motion fields (Dome CW and Dome CCW) occasionally have issues and crash all of Kstars.  The work-around is to enter the number of degrees you want to move in the "Relative Position" field, using either positive (CW) or negative (CCW) numbers.
     
-- Version 0.1, 20211218:  Initial release in beta. 
+Version 0.1, 20211218:  Initial release in beta. 
