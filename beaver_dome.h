@@ -112,7 +112,9 @@ class Beaver : public INDI::Dome
         ///////////////////////////////////////////////////////////////////////////////
         /// Shutter Motion Control
         ///////////////////////////////////////////////////////////////////////////////
+        //bool shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout, double voltage);
         bool shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double voltage);
+
         bool shutterGetSettings();
         bool shutterFindHome();
         bool shutterAbort();
@@ -176,6 +178,8 @@ class Beaver : public INDI::Dome
             SHUTTER_ACCELERATION,
             SHUTTER_SAFE_VOLTAGE
         };
+        INDI::PropertyNumber ShutterSettingsTimeoutNP {1};
+
         // Rotator Configuration
         INDI::PropertyNumber RotatorSettingsNP {4};
         enum

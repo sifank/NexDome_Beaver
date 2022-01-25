@@ -21,7 +21,14 @@
 */
 /*
  * TODO:
- *  ability to set rotator and shutter parameters
+ * - shutter is giving hdwr errors
+ * - shutter field is red
+ *   - changed, test
+ * - added shutter timeout, getting cmd error from cntlr (!dome setshuttertimeoutopenclose 145#) gives: !error dome setshuttertimeoutopenclose:error -134 standard#
+ *    - test with new firmware
+ *  - can only set safe voltage to int, not .5s
+ *    - test with new firmware
+ * - add button for shutter abort
 */
 #include "beaver_dome.h"
 
@@ -98,8 +105,7 @@ bool Beaver::initProperties()
     RotatorSettingsNP[ROTATOR_MIN_SPEED].fill("ROTATOR_MIN_SPEED", "Min Speed (m/s)", "%.f", 1, 1000, 10, 400);
     RotatorSettingsNP[ROTATOR_ACCELERATION].fill("ROTATOR_ACCELERATION", "Acceleration (m/s^2)", "%.f", 1, 1000, 10, 500);
     RotatorSettingsNP[ROTATOR_TIMEOUT].fill("ROTATOR_TIMEOUT", "Timeout (s)", "%.f", 1, 1000, 10, 83);
-    // ALERT set to readonly for now
-    RotatorSettingsNP.fill(getDeviceName(), "ROTATOR_SETTINGS", "Settings", ROTATOR_TAB, IP_RO, 60, IPS_IDLE);
+    RotatorSettingsNP.fill(getDeviceName(), "ROTATOR_SETTINGS", "Settings", ROTATOR_TAB, IP_RW, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Shutter settings tab
@@ -113,8 +119,10 @@ bool Beaver::initProperties()
     ShutterSettingsNP[SHUTTER_MIN_SPEED].fill("SHUTTER_MIN_SPEED", "Min Speed (m/s)", "%.f", 1, 1000, 10, 400);
     ShutterSettingsNP[SHUTTER_ACCELERATION].fill("SHUTTER_ACCELERATION", "Acceleration (m/s^2)", "%.f", 1, 1000, 10, 500);
     ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].fill("SHUTTER_SAFE_VOLTAGE", "Safe Voltage", "%.1f", 10, 14, .5, 11);
-    // ALERT Set to RO for now
-    ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RO, 60, IPS_IDLE);
+    ShutterSettingsNP.fill(getDeviceName(), "SHUTTER_SETTINGS", "Settings", SHUTTER_TAB, IP_RW, 60, IPS_IDLE);
+
+    ShutterSettingsTimeoutNP[0].fill("SHUTTER_TIMEOUT", "Timeout (s)", "%.f", 1, 1000, 10, 83);
+    ShutterSettingsTimeoutNP.fill(getDeviceName(), "SHUTTER_R_SETTINGS", "Settings", SHUTTER_TAB, IP_RO, 60, IPS_IDLE);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // INFO Tab
@@ -165,6 +173,7 @@ bool Beaver::updateProperties()
         if (shutterOnLine()) {
             defineProperty(&ShutterCalibrationSP);
             defineProperty(&ShutterSettingsNP);
+            defineProperty(&ShutterSettingsTimeoutNP);
             defineProperty(&ShutterStatusTP);
             defineProperty(&ShutterVoltsNP);
         }
@@ -177,6 +186,7 @@ bool Beaver::updateProperties()
         deleteProperty(HomePositionNP.getName());
         deleteProperty(HomeOptionsSP.getName());
         deleteProperty(RotatorSettingsNP.getName());
+        deleteProperty(ShutterSettingsTimeoutNP.getName());
         deleteProperty(RotatorStatusTP.getName());
         deleteProperty(ShutterCalibrationSP.getName());
         deleteProperty(ShutterSettingsNP.getName());
@@ -326,7 +336,7 @@ bool Beaver::ISNewSwitch(const char *dev, const char *name, ISState *states, cha
                         return false;
                     newAz = 360.0 - curHome + rotatorGetAz();
                     rc = rotatorSetHome(newAz);
-                    LOGF_INFO("DIAG: new home az %.1f (from  360 - %1f + %1f)", newAz, curHome, rotatorGetAz());
+                    LOGF_DEBUG("New home az %.1f (from  360 - %1f + %1f)", newAz, curHome, rotatorGetAz());
                     HomeOptionsSP.setState(rc ? IPS_BUSY : IPS_ALERT);
                     break;
 
@@ -364,37 +374,35 @@ bool Beaver::ISNewNumber(const char *dev, const char *name, double values[], cha
 {
     if (dev != nullptr && strcmp(dev, getDeviceName()) == 0)
     {
-        /*********************************** not working, leaving out for now
         /////////////////////////////////////////////
         // Rotator Settings
         /////////////////////////////////////////////
-        if (RotatorSettingsNP.isNameMatch(name))    // TODO does not seem to be updating the cntlr
+        if (RotatorSettingsNP.isNameMatch(name))
         {
-            LOG_DEBUG("Rotator settings have been modified");
             RotatorSettingsNP.update(values, names, n);
             RotatorSettingsNP.setState(rotatorSetSettings(RotatorSettingsNP[ROTATOR_MAX_SPEED].getValue(),
-                                       RotatorSettingsNP[ROTATOR_MIN_SPEED].getValue(),
-                                       RotatorSettingsNP[ROTATOR_ACCELERATION].getValue(),
-                                       RotatorSettingsNP[ROTATOR_TIMEOUT].getValue()) ? IPS_OK : IPS_ALERT);
+                                                          RotatorSettingsNP[ROTATOR_MIN_SPEED].getValue(),
+                                                          RotatorSettingsNP[ROTATOR_ACCELERATION].getValue(),
+                                                          RotatorSettingsNP[ROTATOR_TIMEOUT].getValue()
+                                                          ) ? IPS_OK : IPS_ALERT);
             RotatorSettingsNP.apply();
             return true;
         }
-        // this is being activated on start !
+
         /////////////////////////////////////////////
         // Shutter Settings
         /////////////////////////////////////////////
-        if (ShutterSettingsNP.isNameMatch(name))    // TODO does not seem to be updating the cntlr
+        if (ShutterSettingsNP.isNameMatch(name))
         {
             ShutterSettingsNP.update(values, names, n);
-            LOG_DEBUG("Shutter settings have been modified");
             ShutterSettingsNP.setState(shutterSetSettings(ShutterSettingsNP[SHUTTER_MAX_SPEED].getValue(),
-                                       ShutterSettingsNP[SHUTTER_MIN_SPEED].getValue(),
-                                       ShutterSettingsNP[SHUTTER_ACCELERATION].getValue(),
-                                       ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].getValue()) ? IPS_OK : IPS_ALERT);
-            ShutterCalibrationSP.apply();
+                                                          ShutterSettingsNP[SHUTTER_MIN_SPEED].getValue(),
+                                                          ShutterSettingsNP[SHUTTER_ACCELERATION].getValue(),
+                                                          ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].getValue()
+                                                          ) ? IPS_OK : IPS_ALERT);
+            ShutterSettingsNP.apply();
             return true;
         }
-        ******************************************/
 
         ///////////////////////////////////////////////////////////////////////////////
         /// Home Position
@@ -502,7 +510,6 @@ void Beaver::TimerHit()
             RotatorStatusTP.setState(IPS_OK);
             GotoHomeSP.setState(IPS_OK);
             GotoHomeSP.apply();
-            // TODO turn home button to green
             LOG_DEBUG("Dome at home");
         }
         // Move completed
@@ -521,8 +528,6 @@ void Beaver::TimerHit()
     ////////////////////////////////////////////
     // Test Shutter and set status
     ////////////////////////////////////////////
-    // TODO if shutter goes offline during a session, need to reset capabilities ... take out menu items, etc.
-
     if (shutterOnLine()) {
 
         // Test for shutter error
@@ -533,53 +538,52 @@ void Beaver::TimerHit()
             setShutterState(SHUTTER_ERROR);
         }
 
+        // If moving, set status
         if (getShutterState() == SHUTTER_MOVING) {
 
-            if (domeStatus & DOME_STATUS_SHUTTER_MOVING) {
-                setShutterState(SHUTTER_MOVING);
-                ShutterStatusTP[0].setText("Open");
-                // ?? shutter open/close field -> setState(IPS_OK);
-                LOG_DEBUG("Shutter state set to OPENED");
-            }
-            if (domeStatus & DOME_STATUS_SHUTTER_CLOSED) {
-                setShutterState(SHUTTER_CLOSED);
-                ShutterStatusTP[0].setText("Closed");
-                LOG_DEBUG("Shutter state set to CLOSED");
-            }
-            if (domeStatus & DOME_STATUS_SHUTTER_OPENED) {
-                setShutterState(SHUTTER_OPENED);
-                ShutterStatusTP[0].setText("Open");
-                LOG_DEBUG("Shutter state set to OPEN");
-            }
             if (domeStatus & DOME_STATUS_SHUTTER_OPENING) {
                 setShutterState(SHUTTER_MOVING);
                 ShutterStatusTP[0].setText("Opening");
                 LOG_DEBUG("Shutter state set to Opening");
             }
-            if (domeStatus & DOME_STATUS_SHUTTER_CLOSING) {
+            else if (domeStatus & DOME_STATUS_SHUTTER_CLOSING) {
                 setShutterState(SHUTTER_MOVING);
                 ShutterStatusTP[0].setText("Closing");
                 LOG_DEBUG("Shutter state set to Closing");
             }
-            ShutterStatusTP.apply();
+            else if (domeStatus & DOME_STATUS_SHUTTER_MOVING) {
+                setShutterState(SHUTTER_MOVING);
+                ShutterStatusTP[0].setText("Moving");
+                LOG_DEBUG("Shutter is moving");
+            }
+
         }
+
+        // if stopped, test if opened or closed
+        if (domeStatus & DOME_STATUS_SHUTTER_OPENED) {
+            setShutterState(SHUTTER_OPENED);
+            ShutterStatusTP[0].setText("Open");
+            LOG_DEBUG("Shutter state set to OPEN");
+        }
+        if (domeStatus & DOME_STATUS_SHUTTER_CLOSED) {
+            setShutterState(SHUTTER_CLOSED);
+            ShutterStatusTP[0].setText("Closed");
+            LOG_DEBUG("Shutter state set to CLOSED");
+        }
+        ShutterStatusTP.apply();
 
         // Update shutter voltage
         double res;
-        if (shutterOnLine()) {
-            if (!sendCommand("!dome getshutterbatvoltage#", res))
-                LOG_ERROR("Shutter voltage command error");
-            else {
-                LOGF_DEBUG("Shutter voltage currently is: %.2f", res);
-                ShutterVoltsNP[0].setValue(res);
-                //TODO how can I color the button, not the circle?
-                (res < ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].getValue()) ? ShutterVoltsNP.setState(IPS_ALERT) : ShutterVoltsNP.setState(IPS_OK);
-                ShutterVoltsNP.apply();
-            }
+        // ignoring a random cmd error here and just reporting successful status
+        if (sendCommand("!dome getshutterbatvoltage#", res)) {
+            LOGF_DEBUG("Shutter voltage currently is: %.2f", res);
+            ShutterVoltsNP[0].setValue(res);
+            (res < ShutterSettingsNP[SHUTTER_SAFE_VOLTAGE].getValue()) ? ShutterVoltsNP.setState(IPS_ALERT) : ShutterVoltsNP.setState(IPS_OK);
+            ShutterVoltsNP.apply();
         }
     }
 
-    SetTimer(getCurrentPollingPeriod());
+SetTimer(getCurrentPollingPeriod());
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -645,13 +649,21 @@ IPState Beaver::ControlShutter(ShutterOperation operation)
     double res = 0;
     if (operation == SHUTTER_OPEN)
     {
-        if (sendCommand("!dome openshutter#", res))
+        if (sendCommand("!dome openshutter#", res)) {
+            setShutterState(SHUTTER_MOVING);
             return IPS_BUSY;
+        }
+        else
+            return IPS_ALERT;
     }
     else if (operation == SHUTTER_CLOSE)
     {
-        if (sendCommand("!dome closeshutter#", res))
+        if (sendCommand("!dome closeshutter#", res)) {
+            setShutterState(SHUTTER_MOVING);
             return IPS_BUSY;
+        }
+        else
+            return IPS_ALERT;
     }
     return IPS_ALERT;
 }
@@ -704,7 +716,7 @@ bool Beaver::rotatorSetHome(double az)
     double res = 0;
     snprintf(cmd, DRIVER_LEN, "!domerot sethome %.2f#", az);
     if (sendCommand(cmd, res)) {
-        LOGF_INFO("Home is now set to: %.1f", az);
+        LOGF_INFO("Home is set to: %.1f", az);
         return true;
     }
     return false;
@@ -764,7 +776,7 @@ bool Beaver::rotatorSetPark(double az)
     char cmd[DRIVER_LEN] = {0};
     snprintf(cmd, DRIVER_LEN, "!domerot setpark %.2f#", az);
     if (sendCommand(cmd, res)) {
-        LOGF_INFO("Park is being set to current: %.2f", az);
+        LOGF_INFO("Park set to: %.2f", az);
         SetAxis1Park(az);
         return true;
     }
@@ -781,7 +793,7 @@ bool Beaver::SetCurrentPark() {
     snprintf(cmd, DRIVER_LEN, "!domerot setpark %.2f#", DomeAbsPosN[0].value);
     if (sendCommand(cmd, res)) {
         SetAxis1Park(DomeAbsPosN[0].value);
-        LOGF_INFO("Park is being set to current: %.2f", DomeAbsPosN[0].value);
+        LOGF_INFO("Park set to current: %.2f", DomeAbsPosN[0].value);
     }
         return true;
 
@@ -797,7 +809,7 @@ bool Beaver::SetDefaultPark() {
     snprintf(cmd, DRIVER_LEN, "!domerot setpark %d#", 0);
     if (sendCommand(cmd, res)) {
         SetAxis1Park(0.0);
-        LOG_INFO("Park is being set to default: 0.00");
+        LOG_INFO("Park set to default: 0.00");
         return true;
     }
 
@@ -970,41 +982,46 @@ bool Beaver::shutterAbort()
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceleration, double voltage)
 {
-    INDI_UNUSED(maxSpeed);
-    INDI_UNUSED(minSpeed);
-    INDI_UNUSED(acceleration);
-    INDI_UNUSED(voltage);
-    // ALERT Commented out for now, it set everything to zero on init!
-    // TODO this is not updating
-    /***********
+    if (shutterOnLine()) {
+        char cmd[DRIVER_LEN] = {0};
+        double res;
 
-        if (shutterOnLine()) {
-            if (!sendCommand("!dome setshuttermaxspeed#", maxSpeed)) {
-                LOG_ERROR("Problem setting shutter max speed");
-                return false;
-            }
-            if (!sendCommand("!dome setshutterminspeed#", minSpeed)) {
-                LOG_ERROR("Problem setting shutter min speed");
-                return false;
-            }
-            if (!sendCommand("!dome setshutteracceleration#", acceleration)) {
-                LOG_ERROR("Problem setting shutter acceleration");
-                return false;
-            }
-            if (!sendCommand("!dome setshuttersafevoltage#", voltage)) {  //TODO might be issue setting .x eg 11.5
-                LOG_ERROR("Problem setting shutter safe voltage");
-                return false;
-            }
-            double res = 0;
-            if(!sendCommand("!seletek savefs#", res)) {
-                LOG_ERROR("Problem setting shutter savefs");
-                return false;
-            }
-
-            LOG_DEBUG("We set the shutters ok");
+        snprintf(cmd, DRIVER_LEN, "!dome setshuttermaxspeed %.2f#", maxSpeed);
+        if (!sendCommand(cmd, res)) {
+            LOG_ERROR("Problem setting shutter max speed");
+            return false;
         }
+        snprintf(cmd, DRIVER_LEN, "!dome setshutterminspeed %.2f#", minSpeed);
+        if (!sendCommand(cmd, res)) {
+            LOG_ERROR("Problem setting shutter min speed");
+            return false;
+        }
+        snprintf(cmd, DRIVER_LEN, "!dome setshutteracceleration %.2f#", acceleration);
+        if (!sendCommand(cmd, res)) {
+            LOG_ERROR("Problem setting shutter acceleration");
+            return false;
+        }
+        /*** Lunitco: this feature is not supported
+        snprintf(cmd, DRIVER_LEN, "!dome setshuttertimeoutopenclose %.2f#", timeout);
+        LOGF_INFO("Shutter timeout cmd: %s", cmd);
+        if (!sendCommand(cmd, res)) {
+            LOG_ERROR("Problem setting shutter timeout");
+            return false;
+        }
+        ***/
+        // ALERT only setting whole values
+        snprintf(cmd, DRIVER_LEN, "!dome setshuttersafevoltage %.2f#", voltage);
+        if (!sendCommand(cmd, res)) {
+            LOG_ERROR("Problem setting shutter safe voltage");
+            return false;
+        }
+        if(!sendCommand("!seletek savefs#", res)) {
+            LOG_ERROR("Problem setting shutter savefs");
+            return false;
+        }
+        LOG_INFO("Shutter parameters have been updated");
+    }
 
-    *************/
     return true;
 }
 
@@ -1039,6 +1056,14 @@ bool Beaver::shutterGetSettings()
             ShutterSettingsNP[SHUTTER_ACCELERATION].setValue(res);
             LOGF_DEBUG("Shutter reports acceleration of: %.1f", res);
         }
+        if (!sendCommand("!dome getshuttertimeoutopenclose#", res)) {
+            LOG_ERROR("Problem getting shutter timeout");
+            return false;
+        }
+        else {
+            ShutterSettingsTimeoutNP[0].setValue(res);
+            LOGF_DEBUG("Shutter reports safe timeout of: %.1f", res);
+        }
         if (!sendCommand("!dome getshuttersafevoltage#", res)) {
             LOG_ERROR("Problem getting shutter safe voltage");
             return false;
@@ -1058,37 +1083,35 @@ bool Beaver::shutterGetSettings()
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::rotatorSetSettings(double maxSpeed, double minSpeed, double acceleration, double timeout)
 {
-    INDI_UNUSED(maxSpeed);
-    INDI_UNUSED(minSpeed);
-    INDI_UNUSED(acceleration);
-    INDI_UNUSED(timeout);
-    // ALERT Commented out for now, it set everything to zero on init!
-    // TODO not working
-    /**************
+    char cmd[DRIVER_LEN] = {0};
+    double res;
 
-        if (!sendCommand("!domerot setmaxspeed#", maxSpeed)) {
-            LOG_ERROR("Problem setting rotator max speed");
-            return false;
-        }
-        if (!sendCommand("!domerot setminspeed#", minSpeed)) {
-            LOG_ERROR("Problem setting rotator min speed");
-            return false;
-        }
-        if (!sendCommand("!domerot setacceleration#", acceleration)) {
-            LOG_ERROR("Problem setting rotator acceleration");
-            return false;
-        }
-        if (!sendCommand("!domerot setmaxfullrotsecs#", timeout)) {
-            LOG_ERROR("Problem setting rotator full rot secs");
-            return false;
-        }
-        double res = 0;
-        if(!sendCommand("!seletek savefs#", res)) {
-            LOG_ERROR("dome could not savefs");
-            return false;
-        }
+    snprintf(cmd, DRIVER_LEN, "!domerot setmaxspeed %.2f#", maxSpeed);
+    if (!sendCommand(cmd, res)) {
+        LOG_ERROR("Problem setting rotator max speed");
+        return false;
+    }
+    snprintf(cmd, DRIVER_LEN, "!domerot setminspeed %.2f#", minSpeed);
+    if (!sendCommand(cmd, res)) {
+        LOG_ERROR("Problem setting rotator min speed");
+        return false;
+    }
+    snprintf(cmd, DRIVER_LEN, "!domerot setacceleration %.2f#", acceleration);
+    if (!sendCommand(cmd, res)) {
+        LOG_ERROR("Problem setting rotator acceleration");
+        return false;
+    }
+    snprintf(cmd, DRIVER_LEN, "!domerot setmaxfullrotsecs %.2f#", timeout);
+    if (!sendCommand(cmd, res)) {
+        LOG_ERROR("Problem setting rotator full rot secs");
+        return false;
+    }
+    if(!sendCommand("!seletek savefs#", res)) {
+        LOG_ERROR("dome could not savefs");
+        return false;
+    }
+    LOG_INFO("Rotator parameters have been updated");
 
-    ***************/
     return true;
 }
 
@@ -1156,7 +1179,6 @@ bool Beaver::sendRawCommand(const char * cmd, char * response)
     for (int i = 0; i < 3; i++)
     {
         int nbytes_written = 0, nbytes_read = 0;
-
         rc = tty_write_string(PortFD, cmd, &nbytes_written);
 
         if (rc != TTY_OK)
@@ -1171,28 +1193,30 @@ bool Beaver::sendRawCommand(const char * cmd, char * response)
 
         if (rc != TTY_OK)
         {
+            // wait and try again
             usleep(100000);
             continue;
         }
-        if (rc != TTY_OK) {
-            char errstr[MAXRBUF] = {0};
-            tty_error_msg(rc, errstr, MAXRBUF);
-            LOGF_ERROR("Serial read error: %s.", errstr);
-        }
+
         // Remove extra #
         response[nbytes_read - 1] = 0;
         LOGF_DEBUG("Command Response: %s", response);
+        return true;
     }
 
-    return true;
+    // timeouts used up, return error
+    if (rc != TTY_OK) {
+        char errstr[MAXRBUF] = {0};
+        tty_error_msg(rc, errstr, MAXRBUF);
+        LOGF_ERROR("Serial read error: %s.", errstr);
+    }
+    return false;
 }
 /////////////////////////////////////////////////////////////////////////////
 /// Send Command
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::sendCommand(const char * cmd, double &res)
 {
-    // TODO due to version requiring text not double, need to create separate function of
-    //      above and call this from below and the version in echo()
     char response[DRIVER_LEN] = {0};
     sendRawCommand(cmd, response);
 
@@ -1210,8 +1234,6 @@ bool Beaver::sendCommand(const char * cmd, double &res)
             return false;
         }
     }
-
-    LOGF_INFO("Command error: %s  response: %d", cmd, response);
-
+    LOGF_DEBUG("Command error: %s  response: %d", cmd, response);
     return false;
 }
