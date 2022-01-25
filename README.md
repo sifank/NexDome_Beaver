@@ -15,7 +15,7 @@ NOTES
 - Aborting while the shutter is in motion will stop the shutter, however the controller will issue hardware errors.  
   - Simply close or open the shutter to continue.
 - Use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
-  - Set IP address if you want to use the network
+  - Set IP address inside the controller if you want to use the network
   - Update the firmware
   - Reset rotator or shutter low level settings
 
