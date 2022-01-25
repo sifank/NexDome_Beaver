@@ -8,20 +8,18 @@ The driver is compatible with Beaver firmware version 1.0 or higher.
 
 INDI NexDome Beaver driver is currently only released in beta form from a separate git repository. It is compatible with libindi >= v1.8.2
 
-ALERTS
-======
-20220121 Version 0.8
-
-Read the Release Notes.
-
-Status Overview:
+NOTES
+=====
 - Network connection has not been tested yet, use USB or let me know if it works for you.
 - The controller does not support setting the shutter timeout value.
-- Aborting while the shutter is in motion will stop the shutter, however the controller will issue hardware errors.  Simply close or open the shutter to continue.
+- Aborting while the shutter is in motion will stop the shutter, however the controller will issue hardware errors.  
+  - Simply close or open the shutter to continue.
 - Use the MSWindow's based [Beaver software utility](https://www.nexdome.com/resources) to:
   - Set IP address if you want to use the network
   - Update the firmware
   - Reset rotator or shutter low level settings
+
+*Read the Release Notes*
 
 INSTALL
 =======
