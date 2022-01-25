@@ -176,7 +176,7 @@ After settings the parameters above, go to Options tab and click Save in Configu
 Shutter Tab
 -----------
 
-![Shutter Tab](Assets/ShutterTab.png)
+![Shutter Tab](Assets/ShutterTab1.png)
 
 - NOTE:  This tab will not show up unless the rotator controller is communicating with the shutter
   - When turning the shutter power on, it can take up to 20 seconds for communication to be established
