@@ -4,13 +4,13 @@ This package provides the INDI driver for Lunatico NexDome Beaver controller.
 
 NexDome is a classic observatory dome with more than 100 degrees of shutter opening, allowing you to point your telescope to the zenith while remaining shielded from stray light and wind. The 2.2 meter inside diameter provides plenty of space to operate up to a 14” Schmidt Cass or a refractor 1400mm long.
 
-The driver is compatible with Beaver firmware version 1.0 or higher.
+The driver is compatible with Beaver firmware version 1.1.1 or higher.
 
-INDI NexDome Beaver driver is currently only released in beta form from a separate git repository. It is compatible with libindi >= v1.8.2
+INDI NexDome Beaver driver is compatible with libindi >= v1.8.2
 
 NOTES
 =====
-- Network connection has not been tested yet, use USB or let me know if it works for you.
+- Network connection has not been tested: use USB or let me know if it works for you.
 - The controller does not support setting the shutter timeout value.
 - Aborting while the shutter is in motion will stop the shutter, however the controller will issue hardware errors.
   - (This is compatible with ASCOM) 
@@ -87,7 +87,7 @@ USB:
 
 Network:
 - I am having a problem connecting to the controller, so this is not tested.  Let me know if this works for you.
-- Currently you would have to use the Window's [Beaver software utility](https://www.nexdome.com/resources) tool to set the IP address.
+- Currently you would have to use the Window's [Beaver software utility](https://www.nexdome.com/resources) tool to set the controlers IP address.
 - Port should be 10000
 - Connection type is UDP
 
@@ -118,7 +118,7 @@ Options Tab
 
 You can enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position. After changing these settings, click 'Save configuration' button to save the driver settings.
 
-Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked, and can lead to damage to hardware if it rains.  
+Mount Policy: Mount policy can be either set to Ignore Telescope (default) or Telescope Locks. When the policy is set to Ignore Telescope then the dome can park/unpark regardless of the mount parking state. When it is set Telescope locks, this disallows the dome from parking when telescope is unparked.  This might be important if you telescope has to be parked so as not to interfere with the dome parking.
 
 Site Management Tab
 -------------------
@@ -156,7 +156,7 @@ You can slave the dome to the mount by setting the required slaving parameters (
 
 After settings the parameters above, go to Options tab and click Save in Configurations so that the parameters are used in future sessions. You can also set the Autosync threshold which is the minimum distance autosync will move the dome. Any motion below this threshold will not be triggered. This is to prevent continuous dome moving during telescope tracking.
 
-+ [See Reference for more infomation on these settings - scroll to the bottom](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf)
++ See this [Reference](https://www.nexdome.com/_files/ugd/8a866a_9cd260bfa6de414aacdc7a9e26b0a607.pdf) for more infomation on these settings - scroll to the bottom
   
 Rotator Tab
 -----------
@@ -166,8 +166,8 @@ Rotator Tab
 - Click on the 'Measure Home' button to initialize the rotator.  This will
   find and measure the home sensor on the rotator and set all the parameters.
 - The 'Find Home' button will find the home sensor then calculate and set all the max/min/acceleration/timeout settings
-  - You should not change these unless you really know what you are doing!
-  - If either the rotator or shutter unit is turned off (zero values for the max/min, etc), you should redo the home procedures
+- Settings fields:
+  - You should not change these unless you know what you are doing!
   - To reset the rotator parameters back to defaults, click the 'Measure Home' button
 - To Park or unPark the dome or goto Home, see the Main tab
 
@@ -181,9 +181,11 @@ Shutter Tab
 - NOTE:  This tab will not show up unless the rotator controller is communicating with the shutter
   - When turning the shutter power on, it can take up to 20 seconds for communication to be established
 - The 'AutoCalibrate' button will exercise the shutter through it's full range from closed to open.  It will then set all these fields appropriately.
-  - You really should not change these unless you know what you are doing!
 - If these values are zero, click on the 'AutoCalibrate' button to initialize them
 - Safe Voltage is the level at which the rotator will execute it's shutter safety proceedure and close the shutter.
+- Settings fields:
+  - You really should not change these unless you know what you are doing!
+ 
 - To open or close the shutter, see the Main Tab.
 
 To enable or disable automatic shutter opening and closing when dome goes to into or out of the Park position, see the Options Tab.
