@@ -146,10 +146,6 @@ class Beaver : public INDI::Dome
 
         // Goto Home
         INDI::PropertySwitch GotoHomeSP {1};
-          // Park position in az
-          //INDI::PropertyNumber ParkPositionNP {1};
-          // Set Park position to current
-          //INDI::PropertySwitch ParkPosition2CurrentSP {1};
         // Shutter voltage
         INDI::PropertyNumber ShutterVoltsNP {1};
         // Rotator Status        

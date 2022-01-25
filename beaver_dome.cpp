@@ -19,17 +19,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-/*
- * TODO:
- * - shutter is giving hdwr errors
- * - shutter field is red
- *   - changed, test
- * - added shutter timeout, getting cmd error from cntlr (!dome setshuttertimeoutopenclose 145#) gives: !error dome setshuttertimeoutopenclose:error -134 standard#
- *    - test with new firmware
- *  - can only set safe voltage to int, not .5s
- *    - test with new firmware
- * - add button for shutter abort
-*/
+
 #include "beaver_dome.h"
 
 #include "indicom.h"
@@ -229,7 +219,6 @@ const char *Beaver::getDefaultName()
 //////////////////////////////////////////////////////////////////////////////
 bool Beaver::echo()
 {
-    //NOTE perhaps set a flag for a false, then check at end to return false, thereby allowing other checks to occur
     double res = 0;
 
     // retrieve the controller version from the dome
@@ -574,7 +563,7 @@ void Beaver::TimerHit()
 
         // Update shutter voltage
         double res;
-        // ignoring a random cmd error here and just reporting successful status
+        // ignoring a random get voltage cmd error here and just reporting successful status
         if (sendCommand("!dome getshutterbatvoltage#", res)) {
             LOGF_DEBUG("Shutter voltage currently is: %.2f", res);
             ShutterVoltsNP[0].setValue(res);
@@ -583,7 +572,7 @@ void Beaver::TimerHit()
         }
     }
 
-SetTimer(getCurrentPollingPeriod());
+    SetTimer(getCurrentPollingPeriod());
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -625,7 +614,6 @@ IPState Beaver::MoveRel(double azDiff)
 //////////////////////////////////////////////////////////////////////////////
 IPState Beaver::Move(DomeDirection dir, DomeMotionCommand operation)
  {
-    // Map to button outputs
     LOG_DEBUG("Re-implemented move was called");
      if (operation == MOTION_START)
      {
@@ -709,7 +697,6 @@ bool Beaver::rotatorGetAz()
 /////////////////////////////////////////////////////////////////////////////
 /// Set home offset
 /////////////////////////////////////////////////////////////////////////////
-// NOTE indi_dome has a HOME_POSITION, described as: dome home position in absolute degrees azimuth, should use this instead?
 bool Beaver::rotatorSetHome(double az)
 {
     char cmd[DRIVER_LEN] = {0};
@@ -862,8 +849,6 @@ bool Beaver::rotatorFindHome()
     return false;
 }
 
-
-// ALERT not used
 /////////////////////////////////////////////////////////////////////////////
 /// Rotator at home?
 /////////////////////////////////////////////////////////////////////////////
@@ -919,7 +904,6 @@ bool Beaver::getDomeStatus(uint16_t &domeStatus)
 /////////////////////////////////////////////////////////////////////////////
 bool Beaver::shutterOnLine()
 {
-    // Shutter is considered online if it's status is ok and no comm error
     double res = 0;
     uint16_t domeStatus;
     bool shutterIsUp = false;
@@ -967,7 +951,6 @@ bool Beaver::abortAll()
     return false;
 }
 
-// TODO add button for this
 /////////////////////////////////////////////////////////////////////////////
 /// abort shutter
 /////////////////////////////////////////////////////////////////////////////
@@ -1001,15 +984,6 @@ bool Beaver::shutterSetSettings(double maxSpeed, double minSpeed, double acceler
             LOG_ERROR("Problem setting shutter acceleration");
             return false;
         }
-        /*** Lunitco: this feature is not supported
-        snprintf(cmd, DRIVER_LEN, "!dome setshuttertimeoutopenclose %.2f#", timeout);
-        LOGF_INFO("Shutter timeout cmd: %s", cmd);
-        if (!sendCommand(cmd, res)) {
-            LOG_ERROR("Problem setting shutter timeout");
-            return false;
-        }
-        ***/
-        // ALERT only setting whole values
         snprintf(cmd, DRIVER_LEN, "!dome setshuttersafevoltage %.2f#", voltage);
         if (!sendCommand(cmd, res)) {
             LOG_ERROR("Problem setting shutter safe voltage");
