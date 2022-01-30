@@ -1,3 +1,8 @@
+Version 1.1 20220129
+- Released!  PR sent to INDI
+- Fixed shutter open on unpark
+- Updated xxx.setText to use strings and fixed overrides to be compatible with MAC and Fedora
+
 Version 0.9 20220124
 - Fixed shutter set status
 - Fixed sendcommand timer loop
