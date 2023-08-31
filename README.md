@@ -147,7 +147,7 @@ Slaving Tab
 
 You can slave the dome to the mount by setting the required slaving parameters (by convention the units are in meters);
 
-- Radius is for the radius of the dome (typically 2.2 for a Nexdome)
+- Radius is for the radius of the dome (typically 1.1 for a Nexdome)
 - Shutter width is the aperture of the shutter of the dome in meters (0.6m in current models)
 - N displacement is for north-south displacement of the intersection of the RA & DEC axis as measured from the center of the dome. Displacement to north is positive, and to south is negative.
 - E displacement is for east-west displacement. Similar as the above, displacement to east are positive, and to west are negative.
